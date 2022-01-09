@@ -250,7 +250,6 @@ static void Led_Task(void *parameter) {
                 LED_INDICATOR_CLEAR(LedIndicatorType::Error);
                 notificationShown = true;
                 FastLED.clear();
-
                 if (NUM_LEDS == 1) {
                     for (uint8_t cnt = 0; cnt < 5; cnt++) {
                         FastLED.clear();

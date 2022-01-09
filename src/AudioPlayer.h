@@ -43,3 +43,5 @@ void AudioPlayer_SetMinVolume(uint8_t value);
 uint8_t AudioPlayer_GetInitVolume(void);
 void AudioPlayer_SetInitVolume(uint8_t value);
 void AudioPlayer_SetupVolume(void);
+bool TakeAudioPlayerSemaphore(void);
+void GiveAudioPlayerSemaphore(void);

@@ -3,6 +3,10 @@
 
 extern Preferences gPrefsRfid;
 extern Preferences gPrefsSettings;
+extern SemaphoreHandle_t mutex_spi1; 
+extern SemaphoreHandle_t mutex_spi2;
+extern SemaphoreHandle_t mutex_i2c1;  
+extern SemaphoreHandle_t mutex_i2c2;
 
 void System_Init(void);
 void System_Cyclic(void);

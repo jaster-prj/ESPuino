@@ -57,7 +57,7 @@ static void IRAM_ATTR onTimer();
 static void Button_DoButtonActions(void);
 
 void Button_Init() {
-    #if (WAKEUP_BUTTON <= 39)
+    #if  defined(USEROTARY_ENABLE) && (WAKEUP_BUTTON <= 39)
         esp_sleep_enable_ext0_wakeup((gpio_num_t)WAKEUP_BUTTON, 0);
     #endif
 

@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "settings.h"
 #include "SdCard.h"
+#include "vfs_api.h"
 #include "Common.h"
 #include "Led.h"
 #include "Log.h"
@@ -8,30 +9,43 @@
 #include "System.h"
 
 #ifdef SD_MMC_1BIT_MODE
-    fs::FS gFSystem = (fs::FS)SD_MMC;
+    fs::SDMMCFS gFSystem = fs::SDMMCFS(fs::FSImplPtr(new VFSImpl()));
 #else
-    SPIClass spiSD(HSPI);
-    fs::FS gFSystem = (fs::FS)SD;
+    #if defined(SD_SPI) && SD_SPI == 1
+        #define SD_SCK  SPI1_SCK
+        #define SD_MOSI SPI1_MOSI
+        #define SD_MISO SPI1_MISO
+        extern SPIClass spi1;
+        SPIClass *sd_spi = &spi1;
+    #elif defined(SD_SPI) && SD_SPI == 2
+        #define SD_SCK  SPI2_SCK
+        #define SD_MOSI SPI2_MOSI
+        #define SD_MISO SPI2_MISO
+        extern SPIClass spi2;
+        SPIClass *sd_spi = &spi2;
+    #endif
+    fs::SDFS gFSystem = fs::SDFS(fs::FSImplPtr(new VFSImpl()));
 #endif
 
 void SdCard_Init(void) {
     #ifndef SINGLE_SPI_ENABLE
         #ifdef SD_MMC_1BIT_MODE
             pinMode(2, INPUT_PULLUP);
-            while (!SD_MMC.begin("/sdcard", true)) {
+            while (!gFSystem.begin("/sdcard", true)) {
         #else
-            pinMode(SPISD_CS, OUTPUT);
-            digitalWrite(SPISD_CS, HIGH);
-            spiSD.begin(SPISD_SCK, SPISD_MISO, SPISD_MOSI, SPISD_CS);
-            spiSD.setFrequency(1000000);
-            while (!SD.begin(SPISD_CS, spiSD)) {
+            TakeSDSemaphore();
+            pinMode(SD_CS, OUTPUT);
+            digitalWrite(SD_CS, HIGH);
+            sd_spi->begin(SD_SCK, SD_MISO, SD_MOSI);
+//            sd_spi->setFrequency(1000000);
+            while (!gFSystem.begin(SD_CS, *sd_spi)) {
         #endif
     #else
         #ifdef SD_MMC_1BIT_MODE
             pinMode(2, INPUT_PULLUP);
-            while (!SD_MMC.begin("/sdcard", true)) {
+            while (!gFSystem.begin("/sdcard", true)) {
         #else
-            while (!SD.begin(SPISD_CS)) {
+            while (!gFSystem.begin(SD_CS)) {
         #endif
     #endif
                 Log_Println((char *) FPSTR(unableToMountSd), LOGLEVEL_ERROR);
@@ -43,12 +57,13 @@ void SdCard_Init(void) {
                 }
     #endif
             }
+            GiveSDSemaphore();
 }
 
 void SdCard_Exit(void) {
     // SD card goto idle mode
     #ifdef SD_MMC_1BIT_MODE
-        SD_MMC.end();
+        gFSystem.end();
     #endif
 }
 
@@ -56,10 +71,12 @@ sdcard_type_t SdCard_GetType(void) {
     sdcard_type_t cardType;
     #ifdef SD_MMC_1BIT_MODE
         Log_Println((char *) FPSTR(sdMountedMmc1BitMode), LOGLEVEL_NOTICE);
-        cardType = SD_MMC.cardType();
+        cardType = gFSystem.cardType();
     #else
+        TakeSDSemaphore();
         Log_Println((char *) FPSTR(sdMountedSpiMode), LOGLEVEL_NOTICE);
-        cardType = SD.cardType();
+        cardType = gFSystem.cardType();
+        GiveSDSemaphore();
     #endif
         return cardType;
 }
@@ -92,9 +109,11 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
     bool enablePlaylistFromM3u = false;
 
     // Look if file/folder requested really exists. If not => break.
-    File fileOrDirectory = gFSystem.open(fileName);
+    TakeSDSemaphore();
+    File fileOrDirectory = ((fs::FS)gFSystem).open(fileName);
     if (!fileOrDirectory) {
         Log_Println((char *) FPSTR(dirOrFileDoesNotExist), LOGLEVEL_ERROR);
+        GiveSDSemaphore();
         return NULL;
     }
 
@@ -105,7 +124,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
         strcat(cacheFileNameBuf, (const char*) FPSTR(playlistCacheFile));       // Build absolute path of cacheFile
 
         // Decide if to use cacheFile. It needs to exist first...
-        if (gFSystem.exists(cacheFileNameBuf)) {     // Check if cacheFile (already) exists
+        if (((fs::FS)gFSystem).exists(cacheFileNameBuf)) {     // Check if cacheFile (already) exists
             readFromCacheFile = true;
         }
 
@@ -119,7 +138,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
 
         // Read linear playlist (csv with #-delimiter) from cachefile (faster!)
         if (readFromCacheFile) {
-            File cacheFile = gFSystem.open(cacheFileNameBuf);
+            File cacheFile = ((fs::FS)gFSystem).open(cacheFileNameBuf);
             if (cacheFile) {
                 uint32_t cacheFileSize = cacheFile.size();
 
@@ -167,6 +186,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
             if (serializedPlaylist == NULL) {
                 Log_Println((char *) FPSTR(unableToAllocateMemForLinearPlaylist), LOGLEVEL_ERROR);
                 System_IndicateError();
+                GiveSDSemaphore();
                 return files;
             }
             char buf;
@@ -183,6 +203,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
                         Log_Println((char *) FPSTR(unableToAllocateMemForLinearPlaylist), LOGLEVEL_ERROR);
                         System_IndicateError();
                         free(serializedPlaylist);
+                        GiveSDSemaphore();
                         return files;
                     }
                 }
@@ -201,6 +222,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
                 serializedPlaylist[fPos-1] = '\0';
             }
         } else {
+            GiveSDSemaphore();
             return files;
         }
     }
@@ -214,6 +236,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
             if (files == NULL) {
                 Log_Println((char *) FPSTR(unableToAllocateMemForPlaylist), LOGLEVEL_ERROR);
                 System_IndicateError();
+                GiveSDSemaphore();
                 return NULL;
             }
             Log_Println((char *) FPSTR(fileModeDetected), LOGLEVEL_INFO);
@@ -223,6 +246,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
                 files[1] = x_strdup(fileNameBuf);
             }
             files[0] = x_strdup("1"); // Number of files is always 1 in file-mode
+            GiveSDSemaphore();
 
             return ++files;
         }
@@ -237,7 +261,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
         serializedPlaylist = (char *) x_calloc(allocSize, sizeof(char));
         File cacheFile;
         if (enablePlaylistCaching) {
-            cacheFile = gFSystem.open(cacheFileNameBuf, FILE_WRITE);
+            cacheFile = ((fs::FS)gFSystem).open(cacheFileNameBuf, FILE_WRITE);
         }
 
         while (true) {
@@ -260,6 +284,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
                         if (serializedPlaylist == NULL) {
                             Log_Println((char *) FPSTR(unableToAllocateMemForLinearPlaylist), LOGLEVEL_ERROR);
                             System_IndicateError();
+                            GiveSDSemaphore();
                             return files;
                         }
                     }
@@ -293,6 +318,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
         Log_Println((char *) FPSTR(unableToAllocateMemForPlaylist), LOGLEVEL_ERROR);
         System_IndicateError();
         free(serializedPlaylist);
+        GiveSDSemaphore();
         return NULL;
     }
 
@@ -312,11 +338,32 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
     if (files[0] == NULL) {
         Log_Println((char *) FPSTR(unableToAllocateMemForPlaylist), LOGLEVEL_ERROR);
         System_IndicateError();
+        GiveSDSemaphore();
         return NULL;
     }
     sprintf(files[0], "%u", cnt);
     snprintf(Log_Buffer, Log_BufferLength, "%s: %d", (char *) FPSTR(numberOfValidFiles), cnt);
     Log_Println(Log_Buffer, LOGLEVEL_NOTICE);
-
+    GiveSDSemaphore();
+    
     return ++files; // return ptr+1 (starting at 1st payload-item); ptr+0 contains number of items
+}
+
+void TakeSDSemaphore(void) {
+    #ifndef SD_MMC_1BIT_MODE
+        #if SD_SPI == 1
+            xSemaphoreTake(mutex_spi1, portMAX_DELAY); 
+        #elif  SD_SPI == 2
+            xSemaphoreTake(mutex_spi2, portMAX_DELAY); 
+        #endif
+    #endif
+}
+void GiveSDSemaphore(void) {    
+    #ifndef SD_MMC_1BIT_MODE
+        #if SD_SPI == 1
+            xSemaphoreGive(mutex_spi1); 
+        #elif  SD_SPI == 2
+            xSemaphoreGive(mutex_spi2); 
+        #endif
+    #endif
 }

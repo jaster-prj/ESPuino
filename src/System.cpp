@@ -14,6 +14,10 @@ constexpr const char prefsSettingsNamespace[] PROGMEM = "settings"; // Namespace
 
 Preferences gPrefsRfid;
 Preferences gPrefsSettings;
+SemaphoreHandle_t mutex_spi1; 
+SemaphoreHandle_t mutex_spi2; 
+SemaphoreHandle_t mutex_i2c1; 
+SemaphoreHandle_t mutex_i2c2;
 
 unsigned long System_LastTimeActiveTimestamp = 0u;  // Timestamp of last user-interaction
 unsigned long System_SleepTimerStartTimestamp = 0u; // Flag if sleep-timer is active
@@ -33,6 +37,11 @@ void System_Init(void) {
     srand(esp_random());
     pinMode(POWER, OUTPUT);
     digitalWrite(POWER, HIGH);
+
+    mutex_spi1 = xSemaphoreCreateMutex();
+    mutex_spi2 = xSemaphoreCreateMutex();
+    mutex_i2c1 = xSemaphoreCreateMutex();
+    mutex_i2c2 = xSemaphoreCreateMutex();
 
     gPrefsRfid.begin((char *) FPSTR(prefsRfidNamespace));
     gPrefsSettings.begin((char *) FPSTR(prefsSettingsNamespace));

@@ -32,6 +32,20 @@
 extern unsigned long Rfid_LastRfidCheckTimestamp;
 
 #ifdef RFID_READER_TYPE_PN5180
+    #if defined(SPI1) && RFID_SPI == SPI1
+        #define RFID_SCK    SPI1_SCK
+        #define RFID_MISO   SPI1_MISO
+        #define RFID_MOSI   SPI1_MOSI
+        extern SPIClass spi1;
+        SPIClass *rfid_spi = &spi1;
+    #endif
+    #if defined(SPI2) && RFID_SPI == SPI2
+        #define RFID_SCK    SPI2_SCK
+        #define RFID_MISO   SPI2_MISO
+        #define RFID_MOSI   SPI2_MOSI
+        extern SPIClass spi2;
+        SPIClass *rfid_spi = &spi2;
+    #endif
     static void Rfid_Read(void);
 
     void Rfid_Init(void) {
@@ -42,6 +56,8 @@ extern unsigned long Rfid_LastRfidCheckTimestamp;
             gpio_hold_dis(gpio_num_t(RFID_RST)); // RST
             pinMode(RFID_IRQ, INPUT);
         #endif
+        rfid_spi->begin(RFID_SCK, RFID_MISO, RFID_MOSI, RFID_CS);
+        rfid_spi->setFrequency(1000000);
     }
 
     void Rfid_Cyclic(void) {
@@ -50,8 +66,8 @@ extern unsigned long Rfid_LastRfidCheckTimestamp;
     }
 
     void Rfid_Read(void) {
-        static PN5180ISO14443 nfc14443(RFID_CS, RFID_BUSY, RFID_RST);
-        static PN5180ISO15693 nfc15693(RFID_CS, RFID_BUSY, RFID_RST);
+        static PN5180ISO14443 nfc14443(RFID_CS, RFID_BUSY, RFID_RST, rfid_spi);
+        static PN5180ISO15693 nfc15693(RFID_CS, RFID_BUSY, RFID_RST, rfid_spi);
         static uint32_t lastTimeDetected14443 = 0;
         static uint32_t lastTimeDetected15693 = 0;
         #ifdef PAUSE_WHEN_RFID_REMOVED

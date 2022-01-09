@@ -7,30 +7,45 @@
 #include "System.h"
 
 #if defined RFID_READER_TYPE_MFRC522_SPI || defined RFID_READER_TYPE_MFRC522_I2C
+    #include <MFRC522v2.h>
+    #include <MFRC522DriverPinSimple.h>
     #ifdef RFID_READER_TYPE_MFRC522_SPI
-        #include <MFRC522.h>
+        #include <SPI.h>
+        #include <MFRC522DriverSPI.h>
     #endif
     #if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE)
-        #include "Wire.h"
+        #include <Wire.h>
     #endif
     #ifdef RFID_READER_TYPE_MFRC522_I2C
-        #include <MFRC522_I2C.h>
+        #include <MFRC522DriverI2C.h>
     #endif
 
     extern unsigned long Rfid_LastRfidCheckTimestamp;
 
     #ifdef RFID_READER_TYPE_MFRC522_I2C
-        extern TwoWire i2cBusTwo;
-        static MFRC522_I2C mfrc522(MFRC522_ADDR, MFRC522_RST_PIN, &i2cBusTwo);
+        extern TwoWire RFID_I2C;
+        // static MFRC522DriverPinSimple rst(RST_PIN);
+        static MFRC522DriverI2C mfrc522driver(MFRC522_ADDR, RFID_I2C);
+        static MFRC522 mfrc522{mfrc522driver};
     #endif
     #ifdef RFID_READER_TYPE_MFRC522_SPI
-        static MFRC522 mfrc522(RFID_CS, RST_PIN);
+        extern SPIClass RFID_SPI;
+        static MFRC522DriverPinSimple cs(RFID_CS);
+        static MFRC522DriverPinSimple rst(RST_PIN);
+        const SPISettings spiSettings = SPISettings(SPI_CLOCK_DIV4, MSBFIRST, SPI_MODE0);
+        static MFRC522DriverSPI mfrc522driver(cs, RFID_SPI, spiSettings);
+        static MFRC522 mfrc522{mfrc522driver};
     #endif
 
     void Rfid_Init(void) {
         #ifdef RFID_READER_TYPE_MFRC522_SPI
-            SPI.begin(RFID_SCK, RFID_MISO, RFID_MOSI, RFID_CS);
-            SPI.setFrequency(1000000);
+            RFID_SPI.begin(RFID_SCK, RFID_MISO, RFID_MOSI, RFID_CS);
+            RFID_SPI.setFrequency(1000000);
+        #endif
+        #ifdef RFID_READER_TYPE_MFRC522_I2C
+            RFID_I2C.setPins(RFID_SDA, RFID_SCL);
+            RFID_I2C.setClock(400000);
+            RFID_I2C.begin();
         #endif
 
             // Init RC522 Card-Reader

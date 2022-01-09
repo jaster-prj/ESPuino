@@ -17,7 +17,7 @@ uint32_t wifiStatusToggledTimestamp = 0;
 bool wifiNeedsRestart = false;
 
 // AP-WiFi
-IPAddress apIP(192, 168, 4, 1);        // Access-point's static IP
+IPAddress apIP(192, 168, 9, 1);        // Access-point's static IP
 IPAddress apNetmask(255, 255, 255, 0); // Access-point's netmask
 bool accessPointStarted = false;
 
@@ -74,16 +74,20 @@ void Wlan_Cyclic(void) {
         #endif
 
         // Try to join local WiFi. If not successful, an access-point is opened
-        WiFi.begin(_ssid, _pwd);
-
-        uint8_t tryCount = 0;
-        while (WiFi.status() != WL_CONNECTED && tryCount <= 12) {
-            delay(500);
-            Serial.print(F("."));
-            tryCount++;
-            wifiCheckLastTimestamp = millis();
-            if (tryCount >= 4 && WiFi.status() == WL_CONNECT_FAILED) {
-                WiFi.begin(_ssid, _pwd); // ESP32-workaround (otherwise WiFi-connection sometimes fails)
+        if (strSSID.compareTo("-1") or strPassword.compareTo("-1")) {
+            printf("Connect Wifi.\n");
+            WiFi.mode(WIFI_STA);    
+            WiFi.begin(_ssid, _pwd);
+            printf("Connect Wifi FAILED -> AP.\n");
+            uint8_t tryCount = 0;
+            while (WiFi.status() != WL_CONNECTED && tryCount <= 12) {
+                delay(500);
+                Serial.print(F("."));
+                tryCount++;
+                wifiCheckLastTimestamp = millis();
+                if (tryCount >= 4 && WiFi.status() == WL_CONNECT_FAILED) {
+                    WiFi.begin(_ssid, _pwd); // ESP32-workaround (otherwise WiFi-connection sometimes fails)
+                }
             }
         }
 
@@ -96,6 +100,7 @@ void Wlan_Cyclic(void) {
             #endif
             Log_Println(Log_Buffer, LOGLEVEL_NOTICE);
         } else { // Starts AP if WiFi-connect wasn't successful
+            printf("Connect Wifi-AP.\n");
             accessPointStart((char *) FPSTR(accessPointNetworkSSID), apIP, apNetmask);
         }
 

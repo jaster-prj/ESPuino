@@ -1,6 +1,7 @@
 // !!! MAKE SURE TO EDIT settings.h !!!
 #include <Arduino.h>
 #include <Wire.h>
+#include <WiFi.h>
 #include "settings.h" // Contains all user-relevant settings (general)
 
 #include "AudioPlayer.h"
@@ -34,15 +35,28 @@
 
 ////////////
 
+#ifdef SPI1
+    SPIClass spi1(VSPI);
+#endif
+#ifdef SPI2
+    SPIClass spi2(HSPI);
+#endif
+#if defined(I2C1)
+    TwoWire i2c1(0);
+#endif
+#if defined(I2C2)
+    TwoWire i2c2(1);
+#endif
+
+
+String ssid =     "LT-Home WLAN 2,4";
+String password = "NJ290920!8L&T!40720!8";
+
+
 #if (HAL == 2)
     #include "AC101.h"
     static TwoWire i2cBusOne = TwoWire(0);
     static AC101 ac(&i2cBusOne);
-#endif
-
-// I2C
-#if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE)
-    TwoWire i2cBusTwo = TwoWire(1);
 #endif
 
 #ifdef PLAY_LAST_RFID_AFTER_REBOOT
@@ -127,15 +141,31 @@ void printWakeUpReason() {
 }
 
 void setup() {
+
+    delay(5000);
+
+    #ifdef SPI1
+        spi1.begin(SPI1_SCK, SPI1_MISO, SPI1_MOSI);
+    #endif
+    #ifdef SPI2
+        spi2.begin(SPI2_SCK, SPI2_MISO, SPI2_MOSI);
+    #endif
+    #if defined(I2C1)
+        i2c1.begin(I2C1_SDA, I2C1_SCL);
+    #endif
+    #if defined(I2C2)
+        i2c2.begin(I2C2_SDA, I2C2_SCL);
+    #endif
+
     Log_Init();
     #ifdef RFID_READER_TYPE_PN5180
         Rfid_Init();
+        // Check if wakeup-reason was card-detection (PN5180 only)
+        esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
+        if (wakeup_reason == ESP_SLEEP_WAKEUP_EXT1) {
+            Rfid_WakeupCheck();
+        }
     #endif
-    // Check if wakeup-reason was card-detection (PN5180 only)
-    esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
-    if (wakeup_reason == ESP_SLEEP_WAKEUP_EXT1) {
-        Rfid_WakeupCheck();
-    }
     System_Init();
 
     memset(&gPlayProperties, 0, sizeof(gPlayProperties));
@@ -158,7 +188,8 @@ void setup() {
     Led_Init();
 
     #if (HAL == 2)
-        i2cBusOne.begin(IIC_DATA, IIC_CLK, 40000);
+        i2cBusOne.setPins(IIC_DATA, IIC_CLK);
+        i2cBusOne.setClock(40000);
 
         while (not ac.begin()) {
             Serial.println(F("AC101 Failed!"));
@@ -175,14 +206,10 @@ void setup() {
     #endif
 
     SdCard_Init();
-
-    // Init 2nd i2c-bus if RC522 is used with i2c or if port-expander is enabled
-    #if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE)
-        i2cBusTwo.begin(ext_IIC_DATA, ext_IIC_CLK);
-        //i2cBusTwo.begin(ext_IIC_DATA, ext_IIC_CLK, 40000);
-        delay(50);
-        Log_Println((char *) FPSTR(rfidScannerReady), LOGLEVEL_DEBUG);
-    #endif
+    Wlan_Init();
+    if (OPMODE_NORMAL == System_GetOperationMode()) {
+        Wlan_Cyclic();
+    }
 
     // welcome message
     Serial.println(F(""));
@@ -223,13 +250,11 @@ void setup() {
         Rfid_Init();
     #endif
     RotaryEncoder_Init();
-    Wlan_Init();
+//    Wlan_Init();
     Bluetooth_Init();
-
-    if (OPMODE_NORMAL == System_GetOperationMode()) {
-        Wlan_Cyclic();
-    }
-
+//    if (OPMODE_NORMAL == System_GetOperationMode()) {
+//        Wlan_Cyclic();
+//    }
     IrReceiver_Init();
     System_UpdateActivityTimer(); // initial set after boot
     Led_Indicate(LedIndicatorType::BootComplete);
