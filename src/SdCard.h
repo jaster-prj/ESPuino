@@ -1,12 +1,14 @@
 #pragma once
 #include "settings.h"
-#ifdef SD_MMC_1BIT_MODE
-#include "SD_MMC.h"
-#else
-#include "SD.h"
-#endif
+#include "FS.h"
 
-extern fs::FS gFSystem;
+#ifdef SD_MMC_1BIT_MODE
+    #include "SD_MMC.h"
+    extern fs::SDMMCFS gFSystem;
+#else
+    #include "SD.h"
+    extern fs::SDFS gFSystem;
+#endif
 
 void SdCard_Init(void);
 void SdCard_Exit(void);

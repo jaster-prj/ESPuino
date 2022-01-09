@@ -23,34 +23,34 @@
     more to come...
     */
     #ifndef HAL             // Will be set by platformio.ini. If using Arduini-IDE you have to set HAL according your needs!
-        #define HAL 1       // HAL 1 = LoLin32, 2 = ESP32-A1S-AudioKit, 3 = Lolin D32, 4 = Lolin D32 pro; ... 99 = custom
+        #define HAL 99      // HAL 1 = LoLin32, 2 = ESP32-A1S-AudioKit, 3 = Lolin D32, 4 = Lolin D32 pro; ... 99 = custom
     #endif
 
 
     //########################## MODULES #################################
-    //#define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
+    //#define PORT_EXPANDER_ENABLE            // When enabled, buttons can be connected via port-expander PCA9555
     //#define I2S_COMM_FMT_LSB_ENABLE       // Enables FMT instead of MSB for I2S-communication-format. Used e.g. by PT2811. Don't enable for MAX98357a, AC101 or PCM5102A)
     #define MDNS_ENABLE                     // When enabled, you don't have to handle with ESPuino's IP-address. If hostname is set to "ESPuino", you can reach it via ESPuino.local
     //#define MQTT_ENABLE                     // Make sure to configure mqtt-server and (optionally) username+pwd
     #define FTP_ENABLE                      // Enables FTP-server; DON'T FORGET TO ACTIVATE AFTER BOOT BY PRESSING PAUSE + NEXT-BUTTONS (IN PARALLEL)!
-    #define NEOPIXEL_ENABLE                 // Don't forget configuration of NUM_LEDS if enabled
+    #define NEOPIXEL_ENABLE               // Don't forget configuration of NUM_LEDS if enabled
     //#define NEOPIXEL_REVERSE_ROTATION     // Some Neopixels are adressed/soldered counter-clockwise. This can be configured here.
     #define LANGUAGE DE                     // DE = deutsch; EN = english
     //#define STATIC_IP_ENABLE              // Enables static IP-configuration (change static ip-section accordingly)
     #define HEADPHONE_ADJUST_ENABLE       // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
     #define PLAY_MONO_SPEAKER               // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
     #define SHUTDOWN_IF_SD_BOOT_FAILS       // Will put ESP to deepsleep if boot fails due to SD. Really recommend this if there's in battery-mode no other way to restart ESP! Interval adjustable via deepsleepTimeAfterBootFails.
-    #define MEASURE_BATTERY_VOLTAGE         // Enables battery-measurement via GPIO (ADC) and voltage-divider
+    //#define MEASURE_BATTERY_VOLTAGE         // Enables battery-measurement via GPIO (ADC) and voltage-divider
     //#define PLAY_LAST_RFID_AFTER_REBOOT   // When restarting ESPuino, the last RFID that was active before, is recalled and played
     //#define USE_LAST_VOLUME_AFTER_REBOOT  // Remembers the volume used at last shutdown after reboot
-    #define USEROTARY_ENABLE                // If rotary-encoder is used (don't forget to review WAKEUP_BUTTON if you disable this feature!)
-    #define BLUETOOTH_ENABLE                // If enabled and bluetooth-mode is active, you can stream to your ESPuino via bluetooth (a2dp-sink).
-    //#define IR_CONTROL_ENABLE             // Enables remote control (https://forum.espuino.de/t/neues-feature-fernsteuerung-per-infrarot-fernbedienung/265)
+    //#define USEROTARY_ENABLE                // If rotary-encoder is used (don't forget to review WAKEUP_BUTTON if you disable this feature!)
+    //#define BLUETOOTH_ENABLE                // If enabled and bluetooth-mode is active, you can stream to your ESPuino via bluetooth (a2dp-sink).
+    //#define IR_CONTROL_ENABLE             // Enables remote control
     #define CACHED_PLAYLIST_ENABLE          // Enables playlist-caching (infos: https://forum.espuino.de/t/neues-feature-cached-playlist/515)
-    //#define PAUSE_WHEN_RFID_REMOVED       // Playback starts when card is applied and pauses automatically, when card is removed (https://forum.espuino.de/t/neues-feature-pausieren-wenn-rfid-karte-entfernt-wurde/541)
+    //#define PAUSE_WHEN_RFID_REMOVED       // (Only PN5180) Playback starts when card is applied and pauses, when card is removed (https://forum.espuino.de/t/neues-feature-pausieren-wenn-rfid-karte-entfernt-wurde/541)
     //#define SAVE_PLAYPOS_BEFORE_SHUTDOWN  // When playback is active and mode audiobook was selected, last play-position is saved automatically when shutdown is initiated
     //#define SAVE_PLAYPOS_WHEN_RFID_CHANGE // When playback is active and mode audiobook was selected, last play-position is saved automatically for old playlist when new RFID-tag is applied
-
+    #define VS1053_ENABLE                   // Use VS1053 Encoder for playing
 
     //################## select SD card mode #############################
     #define SD_MMC_1BIT_MODE              // run SD card in SD-MMC 1Bit mode (using GPIOs 15 + 14 + 2 is mandatory!)
@@ -58,15 +58,15 @@
 
 
     //################## select RFID reader ##############################
-    #define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
+    //#define RFID_READER_TYPE_MFRC522_SPI  // use MFRC522 via SPI
     //#define RFID_READER_TYPE_MFRC522_I2C  // use MFRC522 via I2C
-    //#define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
+    #define RFID_READER_TYPE_PN5180         // use PN5180 via SPI
 
-    #ifdef RFID_READER_TYPE_MFRC522_I2C
+    #if defined(RFID_READER_TYPE_MFRC522_I2C)
         #define MFRC522_ADDR 0x28           // default I2C-address of MFRC522
     #endif
 
-    #ifdef RFID_READER_TYPE_PN5180
+    #if defined(RFID_READER_TYPE_PN5180)
         //#define PN5180_ENABLE_LPCD        // Wakes up ESPuino if RFID-tag was applied while deepsleep is active. Only ISO-14443-tags are supported for wakeup!
     #endif
 
@@ -76,8 +76,18 @@
 
 
     //############# Port-expander-configuration ######################
-    #ifdef PORT_EXPANDER_ENABLE
-        constexpr uint8_t expanderI2cAddress = 0x20;  // I2C-address of PCA9555 (0x20 is true if PCA's pins A0+A1+A2 are pulled to GND)
+    #if defined(PORT_EXPANDER_ENABLE)
+        //#define PE_PCA9555
+        #define PE_MCP23017
+        //#define PE_MCP23S17
+    #endif
+
+    #if defined(PE_PCA9555)
+        constexpr uint8_t expanderAddress = 0x20;  // I2C-address of PCA9555
+    #endif
+
+    #if defined(PE_MCP23017) || defined(PE_MCP23S17)
+        constexpr uint8_t expanderAddress = 0x20;  // I2C-address of MCP23017
     #endif
 
     //################## BUTTON-Layout ##################################
@@ -144,11 +154,11 @@
     #define SERIAL_LOGLEVEL LOGLEVEL_DEBUG              // Current loglevel for serial console
 
     // Static ip-configuration
-    #ifdef STATIC_IP_ENABLE
-        #define LOCAL_IP   192,168,2,100                // ESPuino's IP
-        #define GATEWAY_IP 192,168,2,1                  // IP of the gateway/router
+    #if defined(STATIC_IP_ENABLE)
+        #define LOCAL_IP   192,168,8,6                // ESPuino's IP
+        #define GATEWAY_IP 192,168,8,1                  // IP of the gateway/router
         #define SUBNET_IP  255,255,255,0                // Netmask of your network (/24 => 255.255.255.0)
-        #define DNS_IP     192,168,2,1                  // DNS-server of your network; in private networks it's usually the gatewy's IP
+        #define DNS_IP     192,168,8,3                  // DNS-server of your network; in private networks it's usually the gatewy's IP
     #endif
 
     // Buttons (better leave unchanged if in doubts :-))
@@ -159,7 +169,7 @@
     #define RFID_SCAN_INTERVAL 100                      // Interval-time in ms (how often is RFID read?)
 
     // Automatic restart
-    #ifdef SHUTDOWN_IF_SD_BOOT_FAILS
+    #if defined(SHUTDOWN_IF_SD_BOOT_FAILS)
         constexpr uint32_t deepsleepTimeAfterBootFails = 20;      // Automatic restart takes place if boot was not successful after this period (in seconds)
     #endif
 
@@ -177,8 +187,8 @@
 
     //#################### Settings for optional Modules##############################
     // (optinal) Neopixel
-    #ifdef NEOPIXEL_ENABLE
-        #define NUM_LEDS                    24          // number of LEDs
+    #if defined(NEOPIXEL_ENABLE)
+        #define NUM_LEDS                    12          // number of LEDs
         #define CHIPSET                     WS2812B     // type of Neopixel
         #define COLOR_ORDER                 GRB
     #endif
@@ -190,7 +200,7 @@
     constexpr float s_voltageIndicatorHigh = 4.2;                   // Upper range for Neopixel-voltage-indication (all leds) (can be changed via GUI!)
 
     // (optinal) Headphone-detection (leave unchanged if in doubts...)
-    #ifdef HEADPHONE_ADJUST_ENABLE
+    #if defined(HEADPHONE_ADJUST_ENABLE)
         constexpr uint16_t headphoneLastDetectionDebounce = 1000; // Debounce-interval in ms when plugging in headphone
     #endif
 
@@ -198,7 +208,7 @@
     constexpr uint8_t jumpOffset = 30;                            // Offset in seconds to jump for commands CMD_SEEK_FORWARDS / CMD_SEEK_BACKWARDS
 
     // (optional) Topics for MQTT
-    #ifdef MQTT_ENABLE
+    #if defined(MQTT_ENABLE)
         constexpr uint16_t mqttRetryInterval = 60;                // Try to reconnect to MQTT-server every (n) seconds if connection is broken
         constexpr uint8_t mqttMaxRetriesPerInterval = 1;          // Number of retries per time-interval (mqttRetryInterval). mqttRetryInterval 60 / mqttMaxRetriesPerInterval 1 => once every 60s
         #define DEVICE_HOSTNAME "ESP32-ESPuino"         // Name that is used for MQTT
@@ -247,6 +257,10 @@
         #include "settings-azdelivery_sdmmc.h"              // Pre-configured settings for AZ Delivery ESP32 NodeMCU / Devkit C (https://forum.espuino.de/t/az-delivery-esp32-nodemcu-devkit-c-mit-sd-mmc-und-pn5180-als-rfid-leser/634)
     #elif (HAL == 9)
         #include "settings-lolin_d32_sdmmc_pe.h"            // Pre-configured settings for ESPuino Lolin D32 pro with SDMMC + port-expander (https://forum.espuino.de/t/espuino-minid32-pro-lolin-d32-pro-mit-sd-mmc-und-port-expander-smd/866)
+    #elif (HAL == 97)
+        #include "settings-lolin_d32_tj.h"                  // Contains all user-relevant settings for Wemos Lolin D32
+    #elif (HAL == 98)
+        #include "settings-tjEspduino.h"                    // Contains all user-relevant settings for Wemos Lolin D32
     #elif (HAL == 99)
         #include "settings-custom.h"                        // Contains all user-relevant settings custom-board
     #endif

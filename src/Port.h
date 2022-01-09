@@ -1,4 +1,7 @@
 #pragma once
+#include "Wire.h"
+
+extern TwoWire *pe_i2c;
 
 void Port_Init(void);
 void Port_Cyclic(void);

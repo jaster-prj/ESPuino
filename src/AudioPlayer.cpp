@@ -2,7 +2,6 @@
 #include <freertos/task.h>
 #include <esp_task_wdt.h>
 #include "settings.h"
-#include "Audio.h"
 #include "AudioPlayer.h"
 #include "Common.h"
 #include "Led.h"
@@ -17,6 +16,12 @@
 #include "System.h"
 #include "Wlan.h"
 #include "Web.h"
+
+#if defined(VS1053_ENABLE)
+    #include "vs1053.h"
+#else 
+    #include "Audio.h"
+#endif
 
 #define AUDIOPLAYER_VOLUME_MAX 21u
 #define AUDIOPLAYER_VOLUME_MIN 0u
@@ -276,20 +281,48 @@ void AudioPlayer_HeadphoneVolumeManager(void) {
     #endif
 }
 
-class AudioCustom: public Audio {
-public:
-   void *operator new(size_t size) {
-       return psramFound() ? ps_malloc(size) : malloc(size);
-   }
-};
+#if defined(VS1053_ENABLE)
+    #if defined(SPI1) && VS1053_SPI == SPI1
+        extern SPIClass spi1;
+        SPIClass *spi = &spi1;
+    #endif
+    #if defined(SPI2) && VS1053_SPI == SPI2
+        extern SPIClass spi2;
+        SPIClass *spi = &spi2;
+    #endif
+    class AudioCustom: public VS1053 {
+    public:
+        AudioCustom ( uint8_t _cs_pin, uint8_t _dcs_pin, uint8_t _dreq_pin ) : VS1053(_cs_pin, _dcs_pin, _dreq_pin, spi) {};
+        ~AudioCustom();
+        void *operator new(size_t size) {
+            return psramFound() ? ps_malloc(size) : malloc(size);
+        }
+    };
+#else
+    class AudioCustom: public Audio {
+    public:
+        void *operator new(size_t size) {
+            return psramFound() ? ps_malloc(size) : malloc(size);
+        }
+    };
+#endif
 
 // Function to play music as task
 void AudioPlayer_Task(void *parameter) {
     #ifdef BOARD_HAS_PSRAM
-        AudioCustom *audio = new AudioCustom();
+        #if defined(VS1053_ENABLE)
+            AudioCustom *audio = new AudioCustom( VS1053_CS, VS1053_DCS, VS1053_DREG );
+        #else
+            AudioCustom *audio = new AudioCustom();
+        #endif
     #else
-        static Audio audioAsStatic;         // Don't use heap as it's needed for other stuff :-)
-        Audio *audio = &audioAsStatic;
+        #if defined(VS1053_ENABLE)
+            static VS1053 audioAsStatic = VS1053(VS1053_CS, VS1053_DCS, VS1053_DREG, spi);
+            VS1053 *audio = &audioAsStatic;
+        #else
+            static Audio audioAsStatic;         // Don't use heap as it's needed for other stuff :-)
+            Audio *audio = &audioAsStatic;
+        #endif
     #endif
 
     #ifdef I2S_COMM_FMT_LSB_ENABLE
@@ -297,12 +330,21 @@ void AudioPlayer_Task(void *parameter) {
     #endif
 
     uint8_t settleCount = 0;
-    audio->setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+
+    #if !defined(VS1053_ENABLE)
+        audio->setPinout(I2S_BCLK, I2S_LRC, I2S_DOUT);
+    #else
+        audio->begin();
+    #endif
+    
     audio->setVolume(AudioPlayer_GetInitVolume());
-    audio->forceMono(gPlayProperties.currentPlayMono);
-    if (gPlayProperties.currentPlayMono) {
-        audio->setTone(3, 0, 0);
-    }
+
+    #if !defined(VS1053_ENABLE)
+        audio->forceMono(gPlayProperties.currentPlayMono);
+        if (gPlayProperties.currentPlayMono) {
+            audio->setTone(3, 0, 0);
+        }
+    #endif
 
     uint8_t currentVolume;
     static BaseType_t trackQStatus;
@@ -498,7 +540,7 @@ void AudioPlayer_Task(void *parameter) {
                         // clear cover image
                         gPlayProperties.coverFilePos = 0;
                         Web_SendWebsocketData(0, 40);
-                        audioReturnCode = audio->connecttoFS(gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
+                        audioReturnCode = audio->connecttoFS(&gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
                         // consider track as finished, when audio lib call was not successful
                         if (!audioReturnCode) {
                             System_IndicateError();
@@ -644,7 +686,7 @@ void AudioPlayer_Task(void *parameter) {
                     // clear cover image
                     gPlayProperties.coverFilePos = 0;
                     Web_SendWebsocketData(0, 40);
-                    audioReturnCode = audio->connecttoFS(gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
+                    audioReturnCode = audio->connecttoFS(&gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
                     // consider track as finished, when audio lib call was not successful
                 }
             }
@@ -743,17 +785,19 @@ void AudioPlayer_Task(void *parameter) {
         }
 
         // Handle if mono/stereo should be changed (e.g. if plugging headphones)
-        if (gPlayProperties.newPlayMono != gPlayProperties.currentPlayMono) {
-            gPlayProperties.currentPlayMono = gPlayProperties.newPlayMono;
-            audio->forceMono(gPlayProperties.currentPlayMono);
-            if (gPlayProperties.currentPlayMono) {
-                Log_Println(newPlayModeMono, LOGLEVEL_NOTICE);
-                audio->setTone(3, 0, 0);
-            } else {
-                Log_Println(newPlayModeStereo, LOGLEVEL_NOTICE);
-                audio->setTone(0, 0, 0);
+        #if !defined(VS1053_ENABLE)
+            if (gPlayProperties.newPlayMono != gPlayProperties.currentPlayMono) {
+                gPlayProperties.currentPlayMono = gPlayProperties.newPlayMono;
+                audio->forceMono(gPlayProperties.currentPlayMono);
+                if (gPlayProperties.currentPlayMono) {
+                    Log_Println(newPlayModeMono, LOGLEVEL_NOTICE);
+                    audio->setTone(3, 0, 0);
+                } else {
+                    Log_Println(newPlayModeStereo, LOGLEVEL_NOTICE);
+                    audio->setTone(0, 0, 0);
+                }
             }
-        }
+        #endif
 
         // Calculate relative position in file (for neopixel) for SD-card-mode
         if (!gPlayProperties.playlistFinished && !gPlayProperties.isWebstream) {

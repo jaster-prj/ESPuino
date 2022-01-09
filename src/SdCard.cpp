@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include "settings.h"
 #include "SdCard.h"
+#include "vfs_api.h"
 #include "Common.h"
 #include "Led.h"
 #include "Log.h"
@@ -8,30 +9,42 @@
 #include "System.h"
 
 #ifdef SD_MMC_1BIT_MODE
-    fs::FS gFSystem = (fs::FS)SD_MMC;
+    fs::SDMMCFS gFSystem = fs::SDMMCFS(fs::FSImplPtr(new VFSImpl()));
 #else
-    SPIClass spiSD(HSPI);
-    fs::FS gFSystem = (fs::FS)SD;
+    #if defined(SD_SPI) && SD_SPI == 1
+        #define SD_SCK  SPI1_SCK
+        #define SD_MOSI SPI1_MOSI
+        #define SD_MISO SPI1_MISO
+        extern SPIClass spi1;
+        SPIClass *sd_spi = &spi1;
+    #elif defined(SD_SPI) && SD_SPI == 2
+        #define SD_SCK  SPI2_SCK
+        #define SD_MOSI SPI2_MOSI
+        #define SD_MISO SPI2_MISO
+        extern SPIClass spi2;
+        SPIClass *sd_spi = &spi2;
+    #endif
+    fs::SDFS gFSystem = fs::SDFS(fs::FSImplPtr(new VFSImpl()));
 #endif
 
 void SdCard_Init(void) {
     #ifndef SINGLE_SPI_ENABLE
         #ifdef SD_MMC_1BIT_MODE
             pinMode(2, INPUT_PULLUP);
-            while (!SD_MMC.begin("/sdcard", true)) {
+            while (!gFSystem.begin("/sdcard", true)) {
         #else
-            pinMode(SPISD_CS, OUTPUT);
-            digitalWrite(SPISD_CS, HIGH);
-            spiSD.begin(SPISD_SCK, SPISD_MISO, SPISD_MOSI, SPISD_CS);
-            spiSD.setFrequency(1000000);
-            while (!SD.begin(SPISD_CS, spiSD)) {
+            pinMode(SD_CS, OUTPUT);
+            digitalWrite(SD_CS, HIGH);
+            sd_spi->begin(SD_SCK, SD_MISO, SD_MOSI);
+            sd_spi->setFrequency(1000000);
+            while (!gFSystem.begin(SD_CS, *sd_spi)) {
         #endif
     #else
         #ifdef SD_MMC_1BIT_MODE
             pinMode(2, INPUT_PULLUP);
-            while (!SD_MMC.begin("/sdcard", true)) {
+            while (!gFSystem.begin("/sdcard", true)) {
         #else
-            while (!SD.begin(SPISD_CS)) {
+            while (!gFSystem.begin(SD_CS)) {
         #endif
     #endif
                 Log_Println((char *) FPSTR(unableToMountSd), LOGLEVEL_ERROR);
@@ -48,7 +61,7 @@ void SdCard_Init(void) {
 void SdCard_Exit(void) {
     // SD card goto idle mode
     #ifdef SD_MMC_1BIT_MODE
-        SD_MMC.end();
+        gFSystem.end();
     #endif
 }
 
@@ -56,10 +69,10 @@ sdcard_type_t SdCard_GetType(void) {
     sdcard_type_t cardType;
     #ifdef SD_MMC_1BIT_MODE
         Log_Println((char *) FPSTR(sdMountedMmc1BitMode), LOGLEVEL_NOTICE);
-        cardType = SD_MMC.cardType();
+        cardType = gFSystem.cardType();
     #else
         Log_Println((char *) FPSTR(sdMountedSpiMode), LOGLEVEL_NOTICE);
-        cardType = SD.cardType();
+        cardType = gFSystem.cardType();
     #endif
         return cardType;
 }
@@ -129,7 +142,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
     bool enablePlaylistFromM3u = false;
 
     // Look if file/folder requested really exists. If not => break.
-    File fileOrDirectory = gFSystem.open(fileName);
+    File fileOrDirectory = ((fs::FS)gFSystem).open(fileName);
     if (!fileOrDirectory) {
         Log_Println((char *) FPSTR(dirOrFileDoesNotExist), LOGLEVEL_ERROR);
         return NULL;
@@ -142,7 +155,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
         strcat(cacheFileNameBuf, (const char*) FPSTR(playlistCacheFile));       // Build absolute path of cacheFile
 
         // Decide if to use cacheFile. It needs to exist first...
-        if (gFSystem.exists(cacheFileNameBuf)) {     // Check if cacheFile (already) exists
+        if (((fs::FS)gFSystem).exists(cacheFileNameBuf)) {     // Check if cacheFile (already) exists
             readFromCacheFile = true;
         }
 
@@ -156,7 +169,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
 
         // Read linear playlist (csv with #-delimiter) from cachefile (faster!)
         if (readFromCacheFile) {
-            File cacheFile = gFSystem.open(cacheFileNameBuf);
+            File cacheFile = ((fs::FS)gFSystem).open(cacheFileNameBuf);
             if (cacheFile) {
                 uint32_t cacheFileSize = cacheFile.size();
 
@@ -274,7 +287,7 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
         serializedPlaylist = (char *) x_calloc(allocSize, sizeof(char));
         File cacheFile;
         if (enablePlaylistCaching) {
-            cacheFile = gFSystem.open(cacheFileNameBuf, FILE_WRITE);
+            cacheFile = ((fs::FS)gFSystem).open(cacheFileNameBuf, FILE_WRITE);
         }
 
         while (true) {
@@ -354,6 +367,6 @@ char **SdCard_ReturnPlaylist(const char *fileName, const uint32_t _playMode) {
     sprintf(files[0], "%u", cnt);
     snprintf(Log_Buffer, Log_BufferLength, "%s: %d", (char *) FPSTR(numberOfValidFiles), cnt);
     Log_Println(Log_Buffer, LOGLEVEL_NOTICE);
-
+    
     return ++files; // return ptr+1 (starting at 1st payload-item); ptr+0 contains number of items
 }

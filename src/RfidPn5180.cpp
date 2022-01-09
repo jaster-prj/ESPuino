@@ -35,6 +35,21 @@ extern unsigned long Rfid_LastRfidCheckTimestamp;
     static void Rfid_Task(void *parameter);
     static TaskHandle_t rfidTaskHandle;
 
+    #if defined(SPI1) && RFID_SPI == SPI1
+        #define RFID_SCK    SPI1_SCK
+        #define RFID_MISO   SPI1_MISO
+        #define RFID_MOSI   SPI1_MOSI
+        extern SPIClass spi1;
+        SPIClass *rfid_spi = &spi1;
+    #endif
+    #if defined(SPI2) && RFID_SPI == SPI2
+        #define RFID_SCK    SPI2_SCK
+        #define RFID_MISO   SPI2_MISO
+        #define RFID_MOSI   SPI2_MOSI
+        extern SPIClass spi2;
+        SPIClass *rfid_spi = &spi2;
+    #endif
+    
     #ifdef PN5180_ENABLE_LPCD
         void Rfid_EnableLpcd(void);
         bool enabledLpcdShutdown = false;       // Indicates if LPCD should be activated as part of the shutdown-process
@@ -65,6 +80,8 @@ extern unsigned long Rfid_LastRfidCheckTimestamp;
             #endif
         #endif
 
+        rfid_spi->begin(RFID_SCK, RFID_MISO, RFID_MOSI, RFID_CS);
+        rfid_spi->setFrequency(1000000);
         xTaskCreatePinnedToCore(
             Rfid_Task,              /* Function to implement the task */
             "rfid",                 /* Name of the task */
@@ -81,8 +98,8 @@ extern unsigned long Rfid_LastRfidCheckTimestamp;
     }
 
     void Rfid_Task(void *parameter) {
-        static PN5180ISO14443 nfc14443(RFID_CS, RFID_BUSY, RFID_RST);
-        static PN5180ISO15693 nfc15693(RFID_CS, RFID_BUSY, RFID_RST);
+        static PN5180ISO14443 nfc14443(RFID_CS, RFID_BUSY, RFID_RST, rfid_spi);
+        static PN5180ISO15693 nfc15693(RFID_CS, RFID_BUSY, RFID_RST, rfid_spi);
         uint32_t lastTimeDetected14443 = 0;
         uint32_t lastTimeDetected15693 = 0;
         #ifdef PAUSE_WHEN_RFID_REMOVED
