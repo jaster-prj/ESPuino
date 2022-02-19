@@ -540,7 +540,7 @@ void AudioPlayer_Task(void *parameter) {
                         // clear cover image
                         gPlayProperties.coverFilePos = 0;
                         Web_SendWebsocketData(0, 40);
-                        audioReturnCode = audio->connecttoFS(&gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
+                        audioReturnCode = audio->connecttoFS((fs::FS &)gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
                         // consider track as finished, when audio lib call was not successful
                         if (!audioReturnCode) {
                             System_IndicateError();
@@ -686,7 +686,7 @@ void AudioPlayer_Task(void *parameter) {
                     // clear cover image
                     gPlayProperties.coverFilePos = 0;
                     Web_SendWebsocketData(0, 40);
-                    audioReturnCode = audio->connecttoFS(&gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
+                    audioReturnCode = audio->connecttoFS((fs::FS &)gFSystem, *(gPlayProperties.playlist + gPlayProperties.currentTrackNumber));
                     // consider track as finished, when audio lib call was not successful
                 }
             }

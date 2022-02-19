@@ -148,13 +148,6 @@ void setup() {
 
     System_Init();
 
-    // Init 2nd i2c-bus if RC522 is used with i2c or if port-expander is enabled
-    #if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE)
-        i2cBusTwo.begin(ext_IIC_DATA, ext_IIC_CLK);
-        delay(50);
-        Log_Println((char *) FPSTR(rfidScannerReady), LOGLEVEL_DEBUG);
-    #endif
-
     // Needs i2c first if port-expander is used
     Port_Init();
 
@@ -213,7 +206,7 @@ void setup() {
     Mqtt_Init();
     #ifndef PN5180_ENABLE_LPCD
         #if defined (RFID_READER_TYPE_MFRC522_SPI) || defined (RFID_READER_TYPE_MFRC522_I2C) || defined(RFID_READER_TYPE_PN5180)
-            Rfid_Init();
+//            Rfid_Init();
         #endif
     #endif
     RotaryEncoder_Init();
