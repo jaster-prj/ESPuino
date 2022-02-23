@@ -43,7 +43,7 @@
 
 // I2C
 #if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE)
-    TwoWire i2cBusTwo = TwoWire(1);
+    TwoWire i2c = TwoWire(1);
 #endif
 
 #ifdef PLAY_LAST_RFID_AFTER_REBOOT
@@ -115,7 +115,7 @@ void setup() {
 
     // Init 2nd i2c-bus if RC522 is used with i2c or if port-expander is enabled
     #if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE)
-        i2cBusTwo.begin(ext_IIC_DATA, ext_IIC_CLK);
+        i2c.begin(RFID_I2C_DATA, RFID_I2C_CLK);
         delay(50);
         Log_Println((char *) FPSTR(rfidScannerReady), LOGLEVEL_DEBUG);
     #endif

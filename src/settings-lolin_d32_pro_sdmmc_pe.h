@@ -36,14 +36,14 @@
 
     // RFID (via SPI)
     #define RST_PIN                         99          // Used as dummy for RC522
-    #define RFID_CS                         21          // GPIO for chip select (RFID)
+    #define RFID_CS                         05          // GPIO for chip select (RFID)
     #define RFID_MOSI                       23          // GPIO for master out slave in (RFID)
     #define RFID_MISO                       19          // GPIO for master in slave out (RFID)
     #define RFID_SCK                        18          // GPIO for clock-signal (RFID)
 
     #ifdef RFID_READER_TYPE_PN5180
         #define RFID_BUSY                   33          // PN5180 BUSY PIN
-        #define RFID_RST                    22          // PN5180 RESET PIN
+        #define RFID_RST                    32          // PN5180 RESET PIN
         #define RFID_IRQ                    99          // Needs to be adjusted to 106 if LPCD-mode is desired!
     #endif
 
@@ -66,35 +66,35 @@
     #define NEXT_BUTTON                     102         // Next-Button: connected to port-expander
     #define PREVIOUS_BUTTON                 100         // Prev-Button: connected to port-expander
     #define PAUSEPLAY_BUTTON                101         // Pplay-Button: connected to port-expander
-    #define ROTARYENCODER_BUTTON            103         // Set to 99 to disable the button; connected to port-expander
+    #define ROTARYENCODER_BUTTON            99         // Set to 99 to disable the button; connected to port-expander
     #define BUTTON_4                        104         // Button 4: connected to port-expander
     #define BUTTON_5                        105         // Button 5: connected to port-expander
 
     // Channels of port-expander can be read cyclic or interrupt-driven. It's strongly recommended to use the interrupt-way!
     // Infos: https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306
     #ifdef PORT_EXPANDER_ENABLE
-        #define PE_INTERRUPT_PIN            36          // GPIO that is used to receive interrupts from port-expander + to wake up ESP32
+        #define PE_INTERRUPT_PIN            12          // GPIO that is used to receive interrupts from port-expander + to wake up ESP32
     #endif
 
     // I2C-configuration (necessary for PCA9555)
     #if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(PORT_EXPANDER_ENABLE)
-        #define ext_IIC_CLK                 4           // i2c-SCL (clock)
-        #define ext_IIC_DATA                13          // i2c-SDA (data)
+        #define RFID_I2C_CLK                22          // i2c-SCL (clock)
+        #define RFID_I2C_DATA               21          // i2c-SDA (data)
     #endif
 
     // Wake-up button => this also is the interrupt-pin if port-expander is enabled!
     // Please note: only RTC-GPIOs (0, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 39, 99) can be used! Set to 99 to DISABLE.
     // Please note #2: this button can be used as interrupt-pin for port-expander. If so, all pins connected to port-expander can wake up ESPuino.
-    #define WAKEUP_BUTTON                   36          // Defines the button that is used to wake up ESPuino from deepsleep; set to 99 to disable
+    #define WAKEUP_BUTTON                   99          // Defines the button that is used to wake up ESPuino from deepsleep; set to 99 to disable
 
     // Power-control
-    #define POWER                           32          // GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
+    #define POWER                           99          // GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
     #ifdef POWER
         //#define INVERT_POWER                          // If enabled, use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH
     #endif
 
     // (optional) Neopixel
-    #define LED_PIN                         12          // GPIO for Neopixel-signaling
+    #define LED_PIN                         04          // GPIO for Neopixel-signaling
 
     // (optinal) Headphone-detection
     #ifdef HEADPHONE_ADJUST_ENABLE

@@ -28,7 +28,7 @@
 
 
     //########################## MODULES #################################
-    //#define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
+    #define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
     //#define I2S_COMM_FMT_LSB_ENABLE       // Enables FMT instead of MSB for I2S-communication-format. Used e.g. by PT2811. Don't enable for MAX98357a, AC101 or PCM5102A)
     #define MDNS_ENABLE                     // When enabled, you don't have to handle with ESPuino's IP-address. If hostname is set to "ESPuino", you can reach it via ESPuino.local
     //#define MQTT_ENABLE                     // Make sure to configure mqtt-server and (optionally) username+pwd
@@ -36,14 +36,14 @@
     #define NEOPIXEL_ENABLE                 // Don't forget configuration of NUM_LEDS if enabled
     //#define NEOPIXEL_REVERSE_ROTATION     // Some Neopixels are adressed/soldered counter-clockwise. This can be configured here.
     #define LANGUAGE DE                     // DE = deutsch; EN = english
-    //#define STATIC_IP_ENABLE              // Enables static IP-configuration (change static ip-section accordingly)
-    #define HEADPHONE_ADJUST_ENABLE       // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
-    #define PLAY_MONO_SPEAKER               // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
+    #define STATIC_IP_ENABLE              // Enables static IP-configuration (change static ip-section accordingly)
+    //#define HEADPHONE_ADJUST_ENABLE       // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
+    //#define PLAY_MONO_SPEAKER               // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
     #define SHUTDOWN_IF_SD_BOOT_FAILS       // Will put ESP to deepsleep if boot fails due to SD. Really recommend this if there's in battery-mode no other way to restart ESP! Interval adjustable via deepsleepTimeAfterBootFails.
     #define MEASURE_BATTERY_VOLTAGE         // Enables battery-measurement via GPIO (ADC) and voltage-divider
     //#define PLAY_LAST_RFID_AFTER_REBOOT   // When restarting ESPuino, the last RFID that was active before, is recalled and played
     //#define USE_LAST_VOLUME_AFTER_REBOOT  // Remembers the volume used at last shutdown after reboot
-    #define USEROTARY_ENABLE                // If rotary-encoder is used (don't forget to review WAKEUP_BUTTON if you disable this feature!)
+    //#define USEROTARY_ENABLE                // If rotary-encoder is used (don't forget to review WAKEUP_BUTTON if you disable this feature!)
     #define BLUETOOTH_ENABLE                // If enabled and bluetooth-mode is active, you can stream to your ESPuino via bluetooth (a2dp-sink).
     //#define IR_CONTROL_ENABLE             // Enables remote control (https://forum.espuino.de/t/neues-feature-fernsteuerung-per-infrarot-fernbedienung/265)
     #define CACHED_PLAYLIST_ENABLE          // Enables playlist-caching (infos: https://forum.espuino.de/t/neues-feature-cached-playlist/515)
@@ -58,9 +58,9 @@
 
 
     //################## select RFID reader ##############################
-    #define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
+    //#define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
     //#define RFID_READER_TYPE_MFRC522_I2C  // use MFRC522 via I2C
-    //#define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
+    #define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
 
     #ifdef RFID_READER_TYPE_MFRC522_I2C
         #define MFRC522_ADDR 0x28           // default I2C-address of MFRC522
@@ -76,8 +76,18 @@
 
 
     //############# Port-expander-configuration ######################
-    #ifdef PORT_EXPANDER_ENABLE
-        constexpr uint8_t expanderI2cAddress = 0x20;  // I2C-address of PCA9555 (0x20 is true if PCA's pins A0+A1+A2 are pulled to GND)
+    #if defined(PORT_EXPANDER_ENABLE)
+        //#define PE_PCA9555
+        #define PE_MCP23017
+        //#define PE_MCP23S17
+    #endif
+
+    #if defined(PE_PCA9555)
+        constexpr uint8_t expanderAddress = 0x20;  // I2C-address of PCA9555
+    #endif
+
+    #if defined(PE_MCP23017) || defined(PE_MCP23S17)
+        constexpr uint8_t expanderAddress = 0x20;  // I2C-address of MCP23017
     #endif
 
     //################## BUTTON-Layout ##################################
@@ -145,10 +155,10 @@
 
     // Static ip-configuration
     #ifdef STATIC_IP_ENABLE
-        #define LOCAL_IP   192,168,2,100                // ESPuino's IP
-        #define GATEWAY_IP 192,168,2,1                  // IP of the gateway/router
+        #define LOCAL_IP   192,168,8,6                // ESPuino's IP
+        #define GATEWAY_IP 192,168,8,1                  // IP of the gateway/router
         #define SUBNET_IP  255,255,255,0                // Netmask of your network (/24 => 255.255.255.0)
-        #define DNS_IP     192,168,2,1                  // DNS-server of your network; in private networks it's usually the gatewy's IP
+        #define DNS_IP     192,168,8,3                  // DNS-server of your network; in private networks it's usually the gatewy's IP
     #endif
 
     // Buttons (better leave unchanged if in doubts :-))
@@ -178,7 +188,7 @@
     //#################### Settings for optional Modules##############################
     // (optinal) Neopixel
     #ifdef NEOPIXEL_ENABLE
-        #define NUM_LEDS                    24          // number of LEDs
+        #define NUM_LEDS                    12          // number of LEDs
         #define CHIPSET                     WS2812B     // type of Neopixel
         #define COLOR_ORDER                 GRB
     #endif
