@@ -11,6 +11,7 @@
 #include "Log.h"
 #include "Mqtt.h"
 #include "Queues.h"
+#include "Port.h"
 #include "System.h"
 #include "Wlan.h"
 
@@ -247,32 +248,40 @@ void Cmd_Action(const uint16_t mod) {
 			break;
 		}
 #endif
-
-		case CMD_TELL_IP_ADDRESS: {
-			if (Wlan_IsConnected()) {
+        case CMD_TELL_IP_ADDRESS: {
+            if (Wlan_IsConnected()) {
+                if (!gPlayProperties.pausePlay) {
+                    AudioPlayer_TrackControlToQueueSender(PAUSEPLAY);
+                }
 				gPlayProperties.tellMode = TTS_IP_ADDRESS;
-				gPlayProperties.currentSpeechActive = true;
-				gPlayProperties.lastSpeechActive = true;
-				System_IndicateOk();
-			} else {
-				Log_Println(unableToTellIpAddress, LOGLEVEL_ERROR);
-				System_IndicateError();
-			}
-			break;
-		}
+                gPlayProperties.currentSpeechActive = true;
+                gPlayProperties.lastSpeechActive = true;
+                System_IndicateOk();
+            } else {
+                Log_Println(unableToTellIpAddress, LOGLEVEL_ERROR);
+                System_IndicateError();
+            }
+            break;
+        }
 
-		case CMD_TELL_CURRENT_TIME: {
-			if (Wlan_IsConnected()) {
-				gPlayProperties.tellMode = TTS_CURRENT_TIME;
-				gPlayProperties.currentSpeechActive = true;
-				gPlayProperties.lastSpeechActive = true;
-				System_IndicateOk();
-			} else {
-				Log_Println(unableToTellTime, LOGLEVEL_ERROR);
-				System_IndicateError();
-			}
-			break;
-		}
+        case CMD_TOGGLE_BUTTON_LIGHT: {
+            #if defined(GPIO_LED0)
+                Port_Write(GPIO_LED0, !Port_Read(GPIO_LED0));
+            #endif
+            #if defined(GPIO_LED1)
+                Port_Write(GPIO_LED1, !Port_Read(GPIO_LED1));
+            #endif
+            #if defined(GPIO_LED2)
+                Port_Write(GPIO_LED2, !Port_Read(GPIO_LED2));
+            #endif
+            #if defined(GPIO_LED3)
+                Port_Write(GPIO_LED3, !Port_Read(GPIO_LED3));
+            #endif
+            #if defined(GPIO_LED4)
+                Port_Write(GPIO_LED4, !Port_Read(GPIO_LED4));
+            #endif
+            break;
+        }
 
 		case CMD_PLAYPAUSE: {
 			if ((OPMODE_NORMAL == System_GetOperationMode()) || (OPMODE_BLUETOOTH_SOURCE == System_GetOperationMode())) {

@@ -33,25 +33,25 @@
 #define BUSY													  10 // Used if playlist is created
 
 // RFID-modifcation-types
-#define CMD_NOTHING						 0 // Do Nothing
-#define CMD_LOCK_BUTTONS_MOD			 100 // Locks all buttons and rotary encoder
-#define CMD_SLEEP_TIMER_MOD_15			 101 // Puts uC into deepsleep after 15 minutes + LED-DIMM
-#define CMD_SLEEP_TIMER_MOD_30			 102 // Puts uC into deepsleep after 30 minutes + LED-DIMM
-#define CMD_SLEEP_TIMER_MOD_60			 103 // Puts uC into deepsleep after 60 minutes + LED-DIMM
-#define CMD_SLEEP_TIMER_MOD_120			 104 // Puts uC into deepsleep after 120 minutes + LED-DIMM
-#define CMD_SLEEP_AFTER_END_OF_TRACK	 105 // Puts uC into deepsleep after track is finished + LED-DIMM
-#define CMD_SLEEP_AFTER_END_OF_PLAYLIST	 106 // Puts uC into deepsleep after playlist is finished + LED-DIMM
-#define CMD_SLEEP_AFTER_5_TRACKS		 107 // Puts uC into deepsleep after five tracks + LED-DIMM
-#define CMD_REPEAT_PLAYLIST				 110 // Changes active playmode to endless-loop (for a playlist)
-#define CMD_REPEAT_TRACK				 111 // Changes active playmode to endless-loop (for a single track)
-#define CMD_DIMM_LEDS_NIGHTMODE			 120 // Changes LED-brightness
-#define CMD_TOGGLE_WIFI_STATUS			 130 // Toggles WiFi-status
-#define CMD_TOGGLE_BLUETOOTH_SINK_MODE	 140 // Toggles Normal/Bluetooth sink Mode
-#define CMD_TOGGLE_BLUETOOTH_SOURCE_MODE 141 // Toggles Normal/Bluetooth source Mode
+#define CMD_NOTHING                      0          // Do Nothing
+#define CMD_LOCK_BUTTONS_MOD             100        // Locks all buttons and rotary encoder
+#define CMD_SLEEP_TIMER_MOD_15           101        // Puts uC into deepsleep after 15 minutes + LED-DIMM
+#define CMD_SLEEP_TIMER_MOD_30           102        // Puts uC into deepsleep after 30 minutes + LED-DIMM
+#define CMD_SLEEP_TIMER_MOD_60           103        // Puts uC into deepsleep after 60 minutes + LED-DIMM
+#define CMD_SLEEP_TIMER_MOD_120          104        // Puts uC into deepsleep after 120 minutes + LED-DIMM
+#define CMD_SLEEP_AFTER_END_OF_TRACK     105        // Puts uC into deepsleep after track is finished + LED-DIMM
+#define CMD_SLEEP_AFTER_END_OF_PLAYLIST  106        // Puts uC into deepsleep after playlist is finished + LED-DIMM
+#define CMD_SLEEP_AFTER_5_TRACKS         107        // Puts uC into deepsleep after five tracks + LED-DIMM
+#define CMD_REPEAT_PLAYLIST              110        // Changes active playmode to endless-loop (for a playlist)
+#define CMD_REPEAT_TRACK                 111        // Changes active playmode to endless-loop (for a single track)
+#define CMD_DIMM_LEDS_NIGHTMODE          120        // Changes LED-brightness
+#define CMD_TOGGLE_WIFI_STATUS           130        // Toggles WiFi-status
+#define CMD_TOGGLE_BLUETOOTH_SINK_MODE   140        // Toggles Normal/Bluetooth sink Mode
+#define CMD_TOGGLE_BLUETOOTH_SOURCE_MODE 141        // Toggles Normal/Bluetooth source Mode
 #define CMD_TOGGLE_MODE					 142 // Toggles Normal => Bluetooth sink => Bluetooth source => Normal Mode
-#define CMD_ENABLE_FTP_SERVER			 150 // Enables FTP-server
-#define CMD_TELL_IP_ADDRESS				 151 // Command: ESPuino announces its IP-address via speech
-#define CMD_TELL_CURRENT_TIME			 152 // Command: ESPuino announces current time via speech
+#define CMD_ENABLE_FTP_SERVER            150         // Enables FTP-server
+#define CMD_TELL_IP_ADDRESS              151         // Command: ESPuino announces its IP-address via speech
+#define CMD_TOGGLE_BUTTON_LIGHT          152         // Toggles Buttons LEDs
 
 #define CMD_PLAYPAUSE	   170 // Command: play/pause
 #define CMD_PREVTRACK	   171 // Command: previous track

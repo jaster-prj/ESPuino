@@ -328,7 +328,6 @@ void AudioPlayer_SetupVolumeAndAmps(void) {
 void AudioPlayer_HeadphoneVolumeManager(void) {
 #ifdef HEADPHONE_ADJUST_ENABLE
 	bool currentHeadPhoneDetectionState = Audio_Detect_Mode_HP(Port_Read(HP_DETECT));
-
 	if (AudioPlayer_HeadphoneLastDetectionState != currentHeadPhoneDetectionState && (millis() - AudioPlayer_HeadphoneLastDetectionTimestamp >= headphoneLastDetectionDebounce)) {
 		if (currentHeadPhoneDetectionState) {
 			AudioPlayer_MaxVolume = AudioPlayer_MaxVolumeSpeaker;
@@ -337,7 +336,7 @@ void AudioPlayer_HeadphoneVolumeManager(void) {
 	#else
 			gPlayProperties.newPlayMono = false;
 	#endif
-
+	Log_Printf(LOGLEVEL_INFO, "Headphones unconnected");
 	#ifdef GPIO_PA_EN
 			Port_Write(GPIO_PA_EN, true, false);
 	#endif
@@ -350,7 +349,7 @@ void AudioPlayer_HeadphoneVolumeManager(void) {
 			if (AudioPlayer_GetCurrentVolume() > AudioPlayer_MaxVolume) {
 				AudioPlayer_VolumeToQueueSender(AudioPlayer_MaxVolume, true); // Lower volume for headphone if headphone's maxvolume is exceeded by volume set in speaker-mode
 			}
-
+			Log_Printf(LOGLEVEL_INFO, "Headphones connected");
 	#ifdef GPIO_PA_EN
 			Port_Write(GPIO_PA_EN, false, false);
 	#endif

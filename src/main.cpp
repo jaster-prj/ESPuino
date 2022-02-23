@@ -66,7 +66,7 @@ static AC101 ac(&i2cBusOne);
 
 // I2C
 #ifdef I2C_2_ENABLE
-TwoWire i2cBusTwo = TwoWire(1);
+	TwoWire i2c = TwoWire(1);
 #endif
 
 #ifdef PLAY_LAST_RFID_AFTER_REBOOT
@@ -136,9 +136,9 @@ void setup() {
 
 // Init 2nd i2c-bus if RC522 is used with i2c or if port-expander is enabled
 #ifdef I2C_2_ENABLE
-	i2cBusTwo.begin(ext_IIC_DATA, ext_IIC_CLK);
+	i2c.begin(ext_IIC_DATA, ext_IIC_CLK);
 	delay(50);
-	Log_Println(rfidScannerReady, LOGLEVEL_DEBUG);
+	Log_Println((char *) FPSTR(rfidScannerReady), LOGLEVEL_DEBUG);
 #endif
 
 #ifdef HALLEFFECT_SENSOR_ENABLE

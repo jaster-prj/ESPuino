@@ -31,31 +31,32 @@
 
 
 	//########################## MODULES #################################
-	//#define PORT_EXPANDER_ENABLE          // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
+	#define PORT_EXPANDER_ENABLE            // When enabled, buttons can be connected via port-expander PCA9555 (https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306)
 	//#define I2S_COMM_FMT_LSB_ENABLE       // Enables FMT instead of MSB for I2S-communication-format. Used e.g. by PT2811. Don't enable for MAX98357a, AC101 or PCM5102A)
 	#define MDNS_ENABLE                     // When enabled, you don't have to handle with ESPuino's IP-address. If hostname is set to "ESPuino", you can reach it via ESPuino.local
-	//#define MQTT_ENABLE                   // Make sure to configure mqtt-server and (optionally) username+pwd
+	#define MQTT_ENABLE                     // Make sure to configure mqtt-server and (optionally) username+pwd
 	#define FTP_ENABLE                      // Enables FTP-server; DON'T FORGET TO ACTIVATE AFTER BOOT BY PRESSING PAUSE + NEXT-BUTTONS (IN PARALLEL)!
 	#define NEOPIXEL_ENABLE                 // Don't forget configuration of NUM_LEDS if enabled
 	//#define NEOPIXEL_REVERSE_ROTATION     // Some Neopixels are adressed/soldered counter-clockwise. This can be configured here.
 	#define LANGUAGE DE                     // DE = deutsch; EN = english
-	//#define STATIC_IP_ENABLE              // DEPRECATED: Enables static IP-configuration (change static ip-section accordingly)
+	#define STATIC_IP_ENABLE                // DEPRECATED: Enables static IP-configuration (change static ip-section accordingly)
 	#define HEADPHONE_ADJUST_ENABLE         // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
-	//#define PLAY_MONO_SPEAKER             // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
+	#define PLAY_MONO_SPEAKER               // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
 	#define SHUTDOWN_IF_SD_BOOT_FAILS       // Will put ESP to deepsleep if boot fails due to SD. Really recommend this if there's in battery-mode no other way to restart ESP! Interval adjustable via deepsleepTimeAfterBootFails.
 	#define MEASURE_BATTERY_VOLTAGE         // Enables battery-measurement via GPIO (ADC) and voltage-divider
 	//#define MEASURE_BATTERY_MAX17055      // Enables battery-measurement via external fuel gauge (MAX17055)
 	//#define SHUTDOWN_ON_BAT_CRITICAL      // Whether to turn off on critical battery-level (only used if MEASURE_BATTERY_XXX is active)
-	//#define PLAY_LAST_RFID_AFTER_REBOOT   // When restarting ESPuino, the last RFID that was active before, is recalled and played
-	//#define USE_LAST_VOLUME_AFTER_REBOOT  // Remembers the volume used at last shutdown after reboot
-	#define USEROTARY_ENABLE                // If rotary-encoder is used (don't forget to review WAKEUP_BUTTON if you disable this feature!)
+	#define PLAY_LAST_RFID_AFTER_REBOOT     // When restarting ESPuino, the last RFID that was active before, is recalled and played
+	#define USE_LAST_VOLUME_AFTER_REBOOT    // Remembers the volume used at last shutdown after reboot
+	//#define USEROTARY_ENABLE              // If rotary-encoder is used (don't forget to review WAKEUP_BUTTON if you disable this feature!)
 	#define BLUETOOTH_ENABLE                // If enabled and bluetooth-mode is active, you can stream to your ESPuino or to a headset via bluetooth (a2dp-sink & a2dp-source). Note: This feature consumes a lot of resources and the available flash/ram might not be sufficient.
 	//#define IR_CONTROL_ENABLE             // Enables remote control (https://forum.espuino.de/t/neues-feature-fernsteuerung-per-infrarot-fernbedienung/265)
+    #define CACHED_PLAYLIST_ENABLE          // Enables playlist-caching (infos: https://forum.espuino.de/t/neues-feature-cached-playlist/515)
 	//#define PAUSE_WHEN_RFID_REMOVED       // Playback starts when card is applied and pauses automatically, when card is removed (https://forum.espuino.de/t/neues-feature-pausieren-wenn-rfid-karte-entfernt-wurde/541)
 	//#define PAUSE_ON_MIN_VOLUME           // When playback is active and volume is changed to zero, playback is paused automatically. Playback is continued if volume reaches 1. (https://forum.espuino.de/t/neues-feature-pausieren-wenn-rfid-karte-entfernt-wurde/541)
 	//#define DONT_ACCEPT_SAME_RFID_TWICE   // RFID-reader doesn't accept the same RFID-tag twice in a row (unless it's a modification-card or RFID-tag is unknown in NVS). Flag will be ignored silently if PAUSE_WHEN_RFID_REMOVED is active. (https://forum.espuino.de/t/neues-feature-dont-accept-same-rfid-twice/1247)
-	//#define SAVE_PLAYPOS_BEFORE_SHUTDOWN  // When playback is active and mode audiobook was selected, last play-position is saved automatically when shutdown is initiated
-	//#define SAVE_PLAYPOS_WHEN_RFID_CHANGE // When playback is active and mode audiobook was selected, last play-position is saved automatically for old playlist when new RFID-tag is applied
+    #define SAVE_PLAYPOS_BEFORE_SHUTDOWN  // When playback is active and mode audiobook was selected, last play-position is saved automatically when shutdown is initiated
+    #define SAVE_PLAYPOS_WHEN_RFID_CHANGE // When playback is active and mode audiobook was selected, last play-position is saved automatically for old playlist when new RFID-tag is applied
 	//#define HALLEFFECT_SENSOR_ENABLE      // Support for hallsensor. For fine-tuning please adjust HallEffectSensor.h Please note: only user-support provided (https://forum.espuino.de/t/magnetische-hockey-tags/1449/35)
 	#define VOLUMECURVE 0 					// 0=square, 1=logarithmic (1 is more flatten at lower volume)
 
@@ -70,10 +71,10 @@
 	//#define NO_SDCARD                     // enable to start without any SD card, e.g. for a webplayer only. SD card Settings above will be ignored
 
 
-	//################## select RFID reader ##############################
-	#define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
-	//#define RFID_READER_TYPE_MFRC522_I2C  // use MFRC522 via I2C
-	//#define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
+    //################## select RFID reader ##############################
+    //#define RFID_READER_TYPE_MFRC522_SPI    // use MFRC522 via SPI
+    //#define RFID_READER_TYPE_MFRC522_I2C  // use MFRC522 via I2C
+    #define RFID_READER_TYPE_PN5180       // use PN5180 via SPI
 
 	#ifdef RFID_READER_TYPE_MFRC522_I2C
 		#define MFRC522_ADDR 0x28           // default I2C-address of MFRC522
@@ -88,10 +89,27 @@
 	#endif
 
 
-	//############# Port-expander-configuration ######################
-	#ifdef PORT_EXPANDER_ENABLE
-		constexpr uint8_t expanderI2cAddress = 0x20;  // I2C-address of PCA9555 (0x20 is true if PCA's pins A0+A1+A2 are pulled to GND)
-	#endif
+    //############# Port-expander-configuration ######################
+    #if defined(PORT_EXPANDER_ENABLE)
+        //#define PE_PCA9555
+        #define PE_MCP23017
+        //#define PE_MCP23S17
+    #endif
+
+        // Channels of port-expander can be read cyclic or interrupt-driven. It's strongly recommended to use the interrupt-way!
+    // Infos: https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306
+    #ifdef PORT_EXPANDER_ENABLE
+        #define PE_INTERRUPT_PIN            99          // GPIO that is used to receive interrupts from port-expander
+        #define PE_RST                      13          // GPIO that is used to receive interrupts from port-expander
+    #endif
+
+    #if defined(PE_PCA9555)
+        constexpr uint8_t expanderAddress = 0x20;  // I2C-address of PCA9555
+    #endif
+
+    #if defined(PE_MCP23017) || defined(PE_MCP23S17)
+        constexpr uint8_t expanderAddress = 0x20;  // I2C-address of MCP23017
+    #endif
 
 	//################## BUTTON-Layout ##################################
 	/* German documentation: https://forum.espuino.de/t/das-dynamische-button-layout/224
@@ -115,41 +133,41 @@
 		BUTTON_MULTI_01 => Buttons 0+1 (NEXT_BUTTON + PREVIOUS_BUTTON) pressed in parallel
 		BUTTON_MULTI_12 => Buttons 1+2 (PREV_BUTTON + PAUSEPLAY_BUTTON) pressed in parallel
 
-	Actions:
-		To all of those buttons, an action can be assigned freely.
-		Please have a look at values.h to look up actions available (>=100 can be used)
-		If you don't want to assign an action or you don't use a given button: CMD_NOTHING has to be set
-	*/
-	// *****BUTTON*****        *****ACTION*****
-	#define BUTTON_0_SHORT    CMD_NEXTTRACK
-	#define BUTTON_1_SHORT    CMD_PREVTRACK
-	#define BUTTON_2_SHORT    CMD_PLAYPAUSE
-	#define BUTTON_3_SHORT    CMD_MEASUREBATTERY
-	#define BUTTON_4_SHORT    CMD_SEEK_BACKWARDS
-	#define BUTTON_5_SHORT    CMD_SEEK_FORWARDS
+    Actions:
+        To all of those buttons, an action can be assigned freely.
+        Please have a look at values.h to look up actions available (>=100 can be used)
+        If you don't want to assign an action or you don't use a given button: CMD_NOTHING has to be set
+    */
+    // *****BUTTON*****        *****ACTION*****
+    #define BUTTON_0_SHORT    CMD_PLAYPAUSE
+    #define BUTTON_1_SHORT    CMD_SEEK_BACKWARDS
+    #define BUTTON_2_SHORT    CMD_SEEK_FORWARDS
+    #define BUTTON_3_SHORT    CMD_VOLUMEUP    //CMD_MEASUREBATTERY
+    #define BUTTON_4_SHORT    CMD_VOLUMEDOWN  //CMD_SEEK_BACKWARDS
+    #define BUTTON_5_SHORT    CMD_NOTHING     //CMD_SEEK_FORWARDS
 
-	#define BUTTON_0_LONG     CMD_LASTTRACK
-	#define BUTTON_1_LONG     CMD_FIRSTTRACK
-	#define BUTTON_2_LONG     CMD_PLAYPAUSE
-	#define BUTTON_3_LONG     CMD_SLEEPMODE
-	#define BUTTON_4_LONG     CMD_VOLUMEUP
-	#define BUTTON_5_LONG     CMD_VOLUMEDOWN
+    #define BUTTON_0_LONG     CMD_PLAYPAUSE
+    #define BUTTON_1_LONG     CMD_PREVTRACK
+    #define BUTTON_2_LONG     CMD_NEXTTRACK
+    #define BUTTON_3_LONG     CMD_TOGGLE_WIFI_STATUS
+    #define BUTTON_4_LONG     CMD_ENABLE_FTP_SERVER
+    #define BUTTON_5_LONG     CMD_NOTHING
 
-	#define BUTTON_MULTI_01   CMD_NOTHING   //CMD_TOGGLE_WIFI_STATUS (disabled now to prevent children from unwanted WiFi-disable)
-	#define BUTTON_MULTI_02   CMD_ENABLE_FTP_SERVER
-	#define BUTTON_MULTI_03   CMD_NOTHING
-	#define BUTTON_MULTI_04   CMD_NOTHING
-	#define BUTTON_MULTI_05   CMD_NOTHING
-	#define BUTTON_MULTI_12   CMD_TELL_IP_ADDRESS
-	#define BUTTON_MULTI_13   CMD_NOTHING
-	#define BUTTON_MULTI_14   CMD_NOTHING
-	#define BUTTON_MULTI_15   CMD_NOTHING
-	#define BUTTON_MULTI_23   CMD_NOTHING
-	#define BUTTON_MULTI_24   CMD_NOTHING
-	#define BUTTON_MULTI_25   CMD_NOTHING
-	#define BUTTON_MULTI_34   CMD_NOTHING
-	#define BUTTON_MULTI_35   CMD_NOTHING
-	#define BUTTON_MULTI_45   CMD_NOTHING
+    #define BUTTON_MULTI_01   CMD_FIRSTTRACK  //CMD_TOGGLE_WIFI_STATUS //(disabled now to prevent children from unwanted WiFi-disable)
+    #define BUTTON_MULTI_02   CMD_LASTTRACK //CMD_ENABLE_FTP_SERVER
+    #define BUTTON_MULTI_03   CMD_NOTHING
+    #define BUTTON_MULTI_04   CMD_NOTHING
+    #define BUTTON_MULTI_05   CMD_NOTHING
+    #define BUTTON_MULTI_12   CMD_SLEEPMODE  //CMD_TELL_IP_ADDRESS
+    #define BUTTON_MULTI_13   CMD_NOTHING
+    #define BUTTON_MULTI_14   CMD_NOTHING
+    #define BUTTON_MULTI_15   CMD_NOTHING
+    #define BUTTON_MULTI_23   CMD_NOTHING
+    #define BUTTON_MULTI_24   CMD_NOTHING
+    #define BUTTON_MULTI_25   CMD_NOTHING
+    #define BUTTON_MULTI_34   CMD_TOGGLE_BUTTON_LIGHT
+    #define BUTTON_MULTI_35   CMD_NOTHING
+    #define BUTTON_MULTI_45   CMD_NOTHING
 
 	//#################### Various settings ##############################
 
@@ -158,13 +176,13 @@
 
     // DEPRECATED: This is now done using dynamic network configuration.
     //              If left, it is used for the automatic migration exactly once
-	// Static ip-configuration
-	#ifdef STATIC_IP_ENABLE
-		#define LOCAL_IP   192,168,2,100                // ESPuino's IP
-		#define GATEWAY_IP 192,168,2,1                  // IP of the gateway/router
-		#define SUBNET_IP  255,255,255,0                // Netmask of your network (/24 => 255.255.255.0)
-		#define DNS_IP     192,168,2,1                  // DNS-server of your network; in private networks it's usually the gatewy's IP
-	#endif
+    // Static ip-configuration
+    #ifdef STATIC_IP_ENABLE
+        #define LOCAL_IP   192,168,8,6                // ESPuino's IP
+        #define GATEWAY_IP 192,168,8,1                  // IP of the gateway/router
+        #define SUBNET_IP  255,255,255,0                // Netmask of your network (/24 => 255.255.255.0)
+        #define DNS_IP     192,168,8,3                  // DNS-server of your network; in private networks it's usually the gatewy's IP
+    #endif
 
 	// Buttons (better leave unchanged if in doubts :-))
 	constexpr uint8_t buttonDebounceInterval = 50;                // Interval in ms to software-debounce buttons
@@ -214,7 +232,7 @@
 	#ifdef NEOPIXEL_ENABLE
 		#define NUM_INDICATOR_LEDS		24          	// number of Neopixel LEDs (formerly NUM_LEDS)
 		#define NUM_CONTROL_LEDS		0		// optional control leds (https://forum.espuino.de/t/statische-ws2812-leds/1703)
-                #define CONTROL_LEDS_COLORS		{}		// Colors for the control LEDs. Make sure it lists at least NUM_CONTROL_LEDS colors, e.g. for three control LEDs define: CONTROL_LEDS_COLORS {CRGB::Yellow, CRGB::Blue, 0xFFFFFF} (predefined colors: http://fastled.io/docs/3.1/struct_c_r_g_b.html)
+        #define CONTROL_LEDS_COLORS		{}		// Colors for the control LEDs. Make sure it lists at least NUM_CONTROL_LEDS colors, e.g. for three control LEDs define: CONTROL_LEDS_COLORS {CRGB::Yellow, CRGB::Blue, 0xFFFFFF} (predefined colors: http://fastled.io/docs/3.1/struct_c_r_g_b.html)
 		#define CHIPSET					WS2812B     	// type of Neopixel
 		#define COLOR_ORDER				GRB
 		#define NUM_LEDS_IDLE_DOTS		4           	// count of LEDs, which are shown when Idle
@@ -223,7 +241,7 @@
 		#define PROGRESS_HUE_END		-1
 		#define DIMMABLE_STATES			50		// Number of dimmed values between two full LEDs (https://forum.espuino.de/t/led-verbesserungen-rework/1739)
 		//#define LED_OFFSET                		0           	// shifts the starting LED in the original direction of the neopixel ring
-	#endif
+    #endif
 
 	#if defined(MEASURE_BATTERY_VOLTAGE) || defined(MEASURE_BATTERY_MAX17055)
 		#define BATTERY_MEASURE_ENABLE                 // Don't change. Set automatically if any method of battery monitoring is selected.
