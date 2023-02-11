@@ -91,19 +91,11 @@
         #endif
 
         if (_initGpio) {
-            switch (_channel) {
-                case 0 ... 39: { // GPIO
-                    pinMode(_channel, OUTPUT);
-                    Port_Write(_channel, _newState);
-                    break;
-                }
-
-                default: {
-                    Port_Write(_channel, _newState);
-                    break;
-                }
+            if (_channel >= 0 && _channel <= 39) {
+                pinMode(_channel, OUTPUT);
             }
         }
+        Port_Write(_channel, _newState);
     }
 
     // Wrapper: writes to GPIOs (via digitalWrite()) or to port-expander (if enabled)

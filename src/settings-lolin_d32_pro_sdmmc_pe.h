@@ -60,24 +60,28 @@
     #endif
 
     // Amp enable (optional)
-    #define GPIO_PA_EN                      108         // To enable/disable amp for loudspeaker; connected to port-expander
+    #define GPIO_PA_EN                      99         // To enable amp for loudspeaker (GPIO or port-channel)
+    #define GPIO_HP_EN                      99         // To enable amp for headphones (GPIO or port-channel)
+    #define GPIO_LED0                       108
+    #define GPIO_LED1                       109
+    #define GPIO_LED2                       110
+    #define GPIO_LED3                       111
+    #define GPIO_LED4                       112
+    //#define GPIO_LED5                       99
 
     // Control-buttons
-    #define NEXT_BUTTON                     102         // Next-Button: connected to port-expander
-    #define PREVIOUS_BUTTON                 100         // Prev-Button: connected to port-expander
-    #define PAUSEPLAY_BUTTON                101         // Pplay-Button: connected to port-expander
-    #define ROTARYENCODER_BUTTON            99         // Set to 99 to disable the button; connected to port-expander
-    #define BUTTON_4                        104         // Button 4: connected to port-expander
-    #define BUTTON_5                        105         // Button 5: connected to port-expander
-
+    #define BUTTON_0                        100         // Button 1: connected to port-expander
+    #define BUTTON_1                        101         // Button 2: connected to port-expander
+    #define BUTTON_2                        102         // Button 3: connected to port-expander
+    #define BUTTON_3                        103         // Button 4: connected to port-expander
+    #define BUTTON_4                        104         // Button 5: connected to port-expander
+    #define BUTTON_5                        105         // Button 6: connected to port-expander
+    #define NEXT_BUTTON                     BUTTON_1    // Next-Button: connected to port-expander
+    #define PREVIOUS_BUTTON                 BUTTON_2    // Prev-Button: connected to port-expander
+    #define PAUSEPLAY_BUTTON                BUTTON_0    // Pplay-Button: connected to port-expander
+    #define ROTARYENCODER_BUTTON            99          // Set to 99 to disable the button; connected to port-expander
     //#define BUTTONS_LED                   114         // Powers the LEDs of the buttons. Make sure the current consumed by the LEDs can be handled by the used GPIO
-
-    // Channels of port-expander can be read cyclic or interrupt-driven. It's strongly recommended to use the interrupt-way!
-    // Infos: https://forum.espuino.de/t/einsatz-des-port-expanders-pca9555/306
-    #ifdef PORT_EXPANDER_ENABLE
-        #define PE_INTERRUPT_PIN            34          // GPIO that is used to receive interrupts from port-expander + to wake up ESP32
-    #endif
-
+    
     // I2C-configuration (necessary for PCA9555)
     #ifdef I2C_2_ENABLE
         #define ext_IIC_CLK                 22           // i2c-SCL (clock)
@@ -87,12 +91,12 @@
     // Wake-up button => this also is the interrupt-pin if port-expander is enabled!
     // Please note: only RTC-GPIOs (0, 4, 12, 13, 14, 15, 25, 26, 27, 32, 33, 34, 35, 36, 39, 99) can be used! Set to 99 to DISABLE.
     // Please note #2: this button can be used as interrupt-pin for port-expander. If so, all pins connected to port-expander can wake up ESPuino.
-    #define WAKEUP_BUTTON                   99          // Defines the button that is used to wake up ESPuino from deepsleep; set to 99 to disable
+    #define WAKEUP_BUTTON                   34          // Defines the button that is used to wake up ESPuino from deepsleep; set to 99 to disable
 
     // Power-control
     #define POWER                           12          // GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
     #ifdef POWER
-        //#define INVERT_POWER                          // If enabled, use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH
+        // #define INVERT_POWER                          // If enabled, use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH
     #endif
 
     // (optional) Neopixel
@@ -100,8 +104,8 @@
 
     // (optinal) Headphone-detection
     #ifdef HEADPHONE_ADJUST_ENABLE
-        //#define DETECT_HP_ON_HIGH                      // Per default headphones are supposed to be connected if HT_DETECT is LOW. DETECT_HP_ON_HIGH will change this behaviour to HIGH.
-        #define HP_DETECT                   107          // GPIO that detects, if there's a plug in the headphone jack or not; connected to port-expander
+        //#define DETECT_HP_ON_HIGH                     // Per default headphones are supposed to be connected if HT_DETECT is LOW. DETECT_HP_ON_HIGH will change this behaviour to HIGH.
+        #define HP_DETECT                   BUTTON_5    // GPIO that detects, if there's a plug in the headphone jack or not; connected to port-expander
     #endif
 
     // (optional) Monitoring of battery-voltage via ADC

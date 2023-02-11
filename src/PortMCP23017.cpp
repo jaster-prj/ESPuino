@@ -21,14 +21,16 @@
     
     MCP23017 expander(expanderAddress, pe_i2c);
 
-    uint16_t Port_ExpanderPortsInputChannelStatus;
+    static uint16_t Port_ExpanderPortsInputChannelStatus;
     static uint16_t Port_ExpanderPortsOutputChannelStatus = 0xFFFF;  // Stores current configuration of output-channels locally
+    static uint16_t Port_ExpanderPortsDirectionChannelStatus = 0x00FF;
     void Port_ExpanderHandler(void);
     uint8_t Port_ChannelToBit(const uint8_t _channel);
+    void Port_CalculateMaskForOutputChannels(void);
     void Port_WriteInitMaskForOutputChannels(void);
     void Port_Test(void);
 
-    #if (PE_INTERRUPT >= 0 && PE_INTERRUPT <= 39)
+    #if defined(PE_INTERRUPT_PIN) && (PE_INTERRUPT_PIN >= 0 && PE_INTERRUPT_PIN <= 39)
         #define PE_INTERRUPT_ENABLE
         void IRAM_ATTR PORT_ExpanderISR(void);
         bool Port_AllowReadFromPortExpander = false;
@@ -37,17 +39,31 @@
 
     void Port_Init(void) {
 
-        pe_i2c->setPins(PE_SDA, PE_SCL);
-        pe_i2c->begin();
+        expander.begin(PE_SDA, PE_SCL);
+        #if defined(PE_RST)
+            pinMode(PE_RST, OUTPUT);
+            digitalWrite(PE_RST, HIGH);
+        #endif
         
         Port_Test();
-        Port_WriteInitMaskForOutputChannels();
+        expander.init();
+        Port_CalculateMaskForOutputChannels();
 
-        #if defined(PE_INTERRUPT)
-            pinMode(PE_INTERRUPT, INPUT_PULLUP);
-            attachInterrupt(PE_INTERRUPT, PORT_ExpanderISR, FALLING);
+        #if defined(PE_INTERRUPT_ENABLE)
+            pinMode(PE_INTERRUPT_PIN, INPUT_PULLUP);
+            expander.interruptMode(MCP23X17InterruptMode::Or);
+            expander.interrupt(MCP23X17Port::A, FALLING);
+            expander.read();
+            expander.clearInterrupts();
+            attachInterrupt(digitalPinToInterrupt(PE_INTERRUPT_PIN), PORT_ExpanderISR, FALLING);
             Log_Println(portExpanderInterruptEnabled, LOGLEVEL_NOTICE);
+        #elif defined(WAKEUP_BUTTON)
+            expander.interruptMode(MCP23X17InterruptMode::Or);
+            expander.interrupt(MCP23X17Port::A, FALLING);
         #endif
+
+
+        Port_WriteInitMaskForOutputChannels();
 
         // If automatic HP-detection is not used...
         #ifndef HEADPHONE_ADJUST_ENABLE
@@ -98,16 +114,22 @@
             switch (_channel) {
                 case 0 ... 39: { // GPIO
                     pinMode(_channel, OUTPUT);
-                    Port_Write(_channel, _newState);
                     break;
                 }
 
+                #ifdef PORT_EXPANDER_ENABLE
+                    case 100 ... 115: {
+                        expander.pinMode(_channel, OUTPUT);
+                        break;
+                    }
+                #endif
+
                 default: {
-                    Port_Write(_channel, _newState);
                     break;
                 }
             }
         }
+        Port_Write(_channel, _newState);
     }
 
     // Wrapper: writes to GPIOs (via digitalWrite()) or to port-expander (if enabled)
@@ -177,33 +199,118 @@
         }
     }
 
+
+    void Port_CalculateMaskForOutputChannels(void) {
+        int8_t shift;
+        #ifdef GPIO_PA_EN
+            shift = GPIO_PA_EN - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef GPIO_HP_EN
+            shift = GPIO_HP_EN - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef GPIO_LED0
+            shift = GPIO_LED0 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef GPIO_LED1
+            shift = GPIO_LED1 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef GPIO_LED2
+            shift = GPIO_LED2 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef GPIO_LED3
+            shift = GPIO_LED3 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef GPIO_LED4
+            shift = GPIO_LED4 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef GPIO_LED5
+            shift = GPIO_LED5 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus &= ~(1 << (shift));
+            }
+        #endif
+
+        #ifdef BUTTON_0
+            shift = BUTTON_0 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus |= (1 << (shift));
+            }
+        #endif 
+
+        #ifdef BUTTON_1
+            shift = BUTTON_1 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus |= (1 << (shift));
+            }
+        #endif
+
+        #ifdef BUTTON_2
+            shift = BUTTON_2 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus |= (1 << (shift));
+            }
+        #endif
+
+        #ifdef BUTTON_3
+            shift = BUTTON_3 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus |= (1 << (shift));
+            }
+        #endif
+
+        #ifdef BUTTON_4
+            shift = BUTTON_4 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus |= (1 << (shift));
+            }
+        #endif
+
+        #ifdef BUTTON_5
+            shift = BUTTON_5 - 100;
+            if (shift >= 0 && shift <= 15) {
+                Port_ExpanderPortsDirectionChannelStatus |= (1 << (shift));
+            }
+        #endif
+    }
+
     // Writes initial port-configuration (I/O) for port-expander PCA9555
     // If no output-channel is necessary, nothing has to be configured as all channels are in input-mode as per default (255)
     // So every bit representing an output-channel needs to be set to 0.
     void Port_WriteInitMaskForOutputChannels(void) {
         const uint16_t portBaseValueBitMask = 0xFFFF;
-        uint16_t OutputBitMaskAsPerPort = 0xFFFF;
-
-        #ifdef GPIO_PA_EN
-            if (GPIO_PA_EN >= 100 && GPIO_PA_EN <= 115) {
-                // Bits of channels to be configured as input are 1 by default.
-                // So in order to change I/O-direction to output we need to set those bits to 0.
-                OutputBitMaskAsPerPort &= ~(1 << (GPIO_PA_EN-100));
-                //Serial.printf("PA LO: %u\n", OutputBitMaskAsPerPort);
-            }
-        #endif
-
-        #ifdef GPIO_HP_EN
-            if (GPIO_HP_EN >= 100 && GPIO_HP_EN <= 107) {
-                OutputBitMaskAsPerPort &= ~(1 << (GPIO_HP_EN-100));
-                //Serial.printf("HP LO: %u\n", OutputBitMaskAsPerPort);
-            }
-        #endif
 
         // Only change port-config if necessary (at least bitmask changed from base-default for one port)
-        if ((OutputBitMaskAsPerPort != portBaseValueBitMask)) {
-            expander.portMode(MCP23X17Port::A, lowByte(OutputBitMaskAsPerPort));
-            expander.portMode(MCP23X17Port::B, highByte(OutputBitMaskAsPerPort));
+        if ((Port_ExpanderPortsDirectionChannelStatus != portBaseValueBitMask)) {
+            expander.portMode(MCP23X17Port::A, lowByte(Port_ExpanderPortsDirectionChannelStatus));
+            expander.portMode(MCP23X17Port::B, highByte(Port_ExpanderPortsDirectionChannelStatus));
             expander.write(0x0000);
         }
     }
@@ -212,18 +319,25 @@
     // Datasheet: https://www.nxp.com/docs/en/data-sheet/PCA9555.pdf
     void Port_ExpanderHandler(void) {
         // If interrupt-handling is active, only ready port-expander's register if interrupt was fired
-        #ifdef PE_INTERRUPT_PIN_ENABLE
+        #ifdef PE_INTERRUPT_ENABLE
             if (!Port_AllowReadFromPortExpander && !Port_AllowInitReadFromPortExpander) {
                 //Serial.println("Interrupt false!");
                 return;
             } else if (Port_AllowInitReadFromPortExpander) {
+                Log_Println("Clear Interrupt", LOGLEVEL_NOTICE);
+                Port_ExpanderPortsInputChannelStatus = expander.read();
+                expander.clearInterrupts();
                 Port_AllowInitReadFromPortExpander = false;
             } else if (Port_AllowReadFromPortExpander || Port_AllowInitReadFromPortExpander) {
                 //Serial.println("Interrupt true!");
+                Log_Println("Clear Interrupt", LOGLEVEL_NOTICE);
+                Port_ExpanderPortsInputChannelStatus = expander.read();
+                expander.clearInterrupts();
                 Port_AllowReadFromPortExpander = false;
             }
+        #else
+            Port_ExpanderPortsInputChannelStatus = expander.read();
         #endif
-        Port_ExpanderPortsInputChannelStatus = expander.read();
     }
 
     // Make sure ports are read finally at shutdown in order to clear any active IRQs that could cause re-wakeup immediately
@@ -242,7 +356,8 @@
     }
 
     #ifdef PE_INTERRUPT_ENABLE
-        void IRAM_ATTR PORT_ExpanderISR(void) {
+        void PORT_ExpanderISR(void) {
+            Log_Println("Expander Interrupt", LOGLEVEL_NOTICE);
             Port_AllowReadFromPortExpander = true;
         }
     #endif

@@ -8,6 +8,7 @@
 #include "Led.h"
 #include "Log.h"
 #include "Mqtt.h"
+#include "Port.h"
 #include "System.h"
 #include "Wlan.h"
 
@@ -272,21 +273,40 @@ void Cmd_Action(const uint16_t mod) {
 			}
 		#endif
 
-		case CMD_TELL_IP_ADDRESS: {
-			if (Wlan_IsConnected()) {
-				if (!gPlayProperties.pausePlay) {
-					AudioPlayer_TrackControlToQueueSender(PAUSEPLAY);
-				}
-				gPlayProperties.tellIpAddress = true;
-				gPlayProperties.currentSpeechActive = true;
-				gPlayProperties.lastSpeechActive = true;
-				System_IndicateOk();
-			} else {
-				Log_Println(unableToTellIpAddress, LOGLEVEL_ERROR);
-				System_IndicateError();
-			}
-			break;
-		}
+        case CMD_TELL_IP_ADDRESS: {
+            if (Wlan_IsConnected()) {
+                if (!gPlayProperties.pausePlay) {
+                    AudioPlayer_TrackControlToQueueSender(PAUSEPLAY);
+                }
+                gPlayProperties.tellIpAddress = true;
+                gPlayProperties.currentSpeechActive = true;
+                gPlayProperties.lastSpeechActive = true;
+                System_IndicateOk();
+            } else {
+                Log_Println(unableToTellIpAddress, LOGLEVEL_ERROR);
+                System_IndicateError();
+            }
+            break;
+        }
+
+        case CMD_TOGGLE_BUTTON_LIGHT: {
+            #if defined(GPIO_LED0)
+                Port_Write(GPIO_LED0, !Port_Read(GPIO_LED0));
+            #endif
+            #if defined(GPIO_LED1)
+                Port_Write(GPIO_LED1, !Port_Read(GPIO_LED1));
+            #endif
+            #if defined(GPIO_LED2)
+                Port_Write(GPIO_LED2, !Port_Read(GPIO_LED2));
+            #endif
+            #if defined(GPIO_LED3)
+                Port_Write(GPIO_LED3, !Port_Read(GPIO_LED3));
+            #endif
+            #if defined(GPIO_LED4)
+                Port_Write(GPIO_LED4, !Port_Read(GPIO_LED4));
+            #endif
+            break;
+        }
 
 		case CMD_PLAYPAUSE: {
 			if (OPMODE_NORMAL == System_GetOperationMode()) {

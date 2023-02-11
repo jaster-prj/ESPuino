@@ -11,25 +11,25 @@ bool gButtonInitComplete = false;
 // Only enable those buttons that are not disabled (99 or >115)
 // 0 -> 39: GPIOs
 // 100 -> 115: Port-expander
-#if (NEXT_BUTTON >= 0 && NEXT_BUTTON <= MAX_GPIO)
-	#define BUTTON_0_ENABLE
-#elif (NEXT_BUTTON >= 100 && NEXT_BUTTON <= 115)
-	#define EXPANDER_0_ENABLE
+#if (BUTTON_0 >= 0 && BUTTON_0 <= MAX_GPIO)
+    #define BUTTON_0_ENABLE
+#elif (BUTTON_0 >= 100 && BUTTON_0 <= 115)
+    #define EXPANDER_0_ENABLE
 #endif
-#if (PREVIOUS_BUTTON >= 0 && PREVIOUS_BUTTON <= MAX_GPIO)
-	#define BUTTON_1_ENABLE
-#elif (PREVIOUS_BUTTON >= 100 && PREVIOUS_BUTTON <= 115)
-	#define EXPANDER_1_ENABLE
+#if (BUTTON_1 >= 0 && BUTTON_1 <= MAX_GPIO)
+    #define BUTTON_1_ENABLE
+#elif (BUTTON_1 >= 100 && BUTTON_1 <= 115)
+    #define EXPANDER_1_ENABLE
 #endif
-#if (PAUSEPLAY_BUTTON >= 0 && PAUSEPLAY_BUTTON <= MAX_GPIO)
-	#define BUTTON_2_ENABLE
-#elif (PAUSEPLAY_BUTTON >= 100 && PAUSEPLAY_BUTTON <= 115)
-	#define EXPANDER_2_ENABLE
+#if (BUTTON_2 >= 0 && BUTTON_2 <= MAX_GPIO)
+    #define BUTTON_2_ENABLE
+#elif (BUTTON_2 >= 100 && BUTTON_2 <= 115)
+    #define EXPANDER_2_ENABLE
 #endif
-#if (ROTARYENCODER_BUTTON >= 0 && ROTARYENCODER_BUTTON <= MAX_GPIO)
-	#define BUTTON_3_ENABLE
-#elif (ROTARYENCODER_BUTTON >= 100 && ROTARYENCODER_BUTTON <= 115)
-	#define EXPANDER_3_ENABLE
+#if (BUTTON_3 >= 0 && BUTTON_3 <= MAX_GPIO)
+    #define BUTTON_3_ENABLE
+#elif (BUTTON_3 >= 100 && BUTTON_3 <= 115)
+    #define EXPANDER_3_ENABLE
 #endif
 #if (BUTTON_4 >= 0 && BUTTON_4 <= MAX_GPIO)
 	#define BUTTON_4_ENABLE
@@ -97,25 +97,25 @@ void Button_Init() {
 		#endif
 	#endif
 
-	// Activate internal pullups for all enabled buttons connected to GPIOs
-	#ifdef BUTTON_0_ENABLE
-		pinMode(NEXT_BUTTON, INPUT_PULLUP);
-	#endif
-	#ifdef BUTTON_1_ENABLE
-		pinMode(PREVIOUS_BUTTON, INPUT_PULLUP);
-	#endif
-	#ifdef BUTTON_2_ENABLE
-		pinMode(PAUSEPLAY_BUTTON, INPUT_PULLUP);
-	#endif
-	#ifdef BUTTON_3_ENABLE
-		pinMode(ROTARYENCODER_BUTTON, INPUT_PULLUP);
-	#endif
-	#ifdef BUTTON_4_ENABLE
-		pinMode(BUTTON_4, INPUT_PULLUP);
-	#endif
-	#ifdef BUTTON_5_ENABLE
-		pinMode(BUTTON_5, INPUT_PULLUP);
-	#endif
+    // Activate internal pullups for all enabled buttons connected to GPIOs
+    #ifdef BUTTON_0_ENABLE
+        pinMode(BUTTON_0, INPUT_PULLUP);
+    #endif
+    #ifdef BUTTON_1_ENABLE
+        pinMode(BUTTON_1, INPUT_PULLUP);
+    #endif
+    #ifdef BUTTON_2_ENABLE
+        pinMode(BUTTON_2, INPUT_PULLUP);
+    #endif
+    #ifdef BUTTON_3_ENABLE
+        pinMode(BUTTON_3, INPUT_PULLUP);
+    #endif
+    #ifdef BUTTON_4_ENABLE
+        pinMode(BUTTON_4, INPUT_PULLUP);
+    #endif
+    #ifdef BUTTON_5_ENABLE
+        pinMode(BUTTON_5, INPUT_PULLUP);
+    #endif
 
 	// Create 1000Hz-HW-Timer (currently only used for buttons)
 	Button_TimerSemaphore = xSemaphoreCreateBinary();
@@ -137,26 +137,26 @@ void Button_Cyclic() {
 			return;
 		}
 
-		// Buttons can be mixed between GPIO and port-expander.
-		// But at the same time only one of them can be for example NEXT_BUTTON
-		#if defined(BUTTON_0_ENABLE) || defined(EXPANDER_0_ENABLE)
-				gButtons[0].currentState = Port_Read(NEXT_BUTTON);
-		#endif
-		#if defined(BUTTON_1_ENABLE) || defined(EXPANDER_1_ENABLE)
-				gButtons[1].currentState = Port_Read(PREVIOUS_BUTTON);
-		#endif
-		#if defined(BUTTON_2_ENABLE) || defined(EXPANDER_2_ENABLE)
-				gButtons[2].currentState = Port_Read(PAUSEPLAY_BUTTON);
-		#endif
-		#if defined(BUTTON_3_ENABLE) || defined(EXPANDER_3_ENABLE)
-				gButtons[3].currentState = Port_Read(ROTARYENCODER_BUTTON);
-		#endif
-		#if defined(BUTTON_4_ENABLE) || defined(EXPANDER_4_ENABLE)
-				gButtons[4].currentState = Port_Read(BUTTON_4);
-		#endif
-		#if defined(BUTTON_5_ENABLE) || defined(EXPANDER_5_ENABLE)
-				gButtons[5].currentState = Port_Read(BUTTON_5);
-		#endif
+        // Buttons can be mixed between GPIO and port-expander.
+        // But at the same time only one of them can be for example NEXT_BUTTON
+        #if defined(BUTTON_0_ENABLE) || defined(EXPANDER_0_ENABLE)
+                gButtons[0].currentState = Port_Read(BUTTON_0);
+        #endif
+        #if defined(BUTTON_1_ENABLE) || defined(EXPANDER_1_ENABLE)
+                gButtons[1].currentState = Port_Read(BUTTON_1);
+        #endif
+        #if defined(BUTTON_2_ENABLE) || defined(EXPANDER_2_ENABLE)
+                gButtons[2].currentState = Port_Read(BUTTON_2);
+        #endif
+        #if defined(BUTTON_3_ENABLE) || defined(EXPANDER_3_ENABLE)
+                gButtons[3].currentState = Port_Read(BUTTON_3);
+        #endif
+        #if defined(BUTTON_4_ENABLE) || defined(EXPANDER_4_ENABLE)
+                gButtons[4].currentState = Port_Read(BUTTON_4);
+        #endif
+        #if defined(BUTTON_5_ENABLE) || defined(EXPANDER_5_ENABLE)
+                gButtons[5].currentState = Port_Read(BUTTON_5);
+        #endif
 
 		// Iterate over all buttons in struct-array
 		for (uint8_t i = 0; i < sizeof(gButtons) / sizeof(gButtons[0]); i++) {
