@@ -38,7 +38,7 @@
     #define NEOPIXEL_ENABLE                 // Don't forget configuration of NUM_LEDS if enabled
     //#define NEOPIXEL_REVERSE_ROTATION     // Some Neopixels are adressed/soldered counter-clockwise. This can be configured here.
     #define LANGUAGE DE                     // DE = deutsch; EN = english
-    //#define STATIC_IP_ENABLE              // Enables static IP-configuration (change static ip-section accordingly)
+    #define STATIC_IP_ENABLE                // Enables static IP-configuration (change static ip-section accordingly)
     #define HEADPHONE_ADJUST_ENABLE         // Used to adjust (lower) volume for optional headphone-pcb (refer maxVolumeSpeaker / maxVolumeHeadphone) and to enable stereo (if PLAY_MONO_SPEAKER is set)
     #define PLAY_MONO_SPEAKER               // If only one speaker is used enabling mono should make sense. Please note: headphones is always stereo (if HEADPHONE_ADJUST_ENABLE is active)
     #define SHUTDOWN_IF_SD_BOOT_FAILS       // Will put ESP to deepsleep if boot fails due to SD. Really recommend this if there's in battery-mode no other way to restart ESP! Interval adjustable via deepsleepTimeAfterBootFails.
@@ -78,7 +78,7 @@
 	#endif
 
 	#ifdef RFID_READER_TYPE_PN5180
-		#define PN5180_ENABLE_LPCD        // Wakes up ESPuino if RFID-tag was applied while deepsleep is active. Only ISO-14443-tags are supported for wakeup!
+		//#define PN5180_ENABLE_LPCD        // Wakes up ESPuino if RFID-tag was applied while deepsleep is active. Only ISO-14443-tags are supported for wakeup!
 	#endif
 
 	#if defined(RFID_READER_TYPE_MFRC522_I2C) || defined(RFID_READER_TYPE_MFRC522_SPI)
@@ -213,9 +213,9 @@
     //#################### Settings for optional Modules##############################
     // (optinal) Neopixel
     #ifdef NEOPIXEL_ENABLE
-        #define NUM_LEDS                    24          // number of LEDs
-        #define CHIPSET                     WS2812B     // type of Neopixel
-        #define COLOR_ORDER                 GRB
+        #define NUM_LEDS                12          // number of LEDs
+        #define CHIPSET                 WS2812B     // type of Neopixel
+        #define COLOR_ORDER             GRB
 		#define NUM_LEDS_IDLE_DOTS		4           	// count of LEDs, which are shown when Idle
 		#define OFFSET_PAUSE_LEDS		false		// if true the pause-leds are centered in the mid of the LED-Strip
 		#define PROGRESS_HUE_START		85          	// Start and end hue of mulitple-LED progress indicator. Hue ranges from basically 0 - 255, but you can also set numbers outside this range to get the desired effect (e.g. 85-215 will go from green to purple via blue, 341-215 start and end at exactly the same color but go from green to purple via yellow and red)

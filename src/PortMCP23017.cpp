@@ -30,7 +30,7 @@
     void Port_WriteInitMaskForOutputChannels(void);
     void Port_Test(void);
 
-    #if defined(PE_INTERRUPT_PIN) && (PE_INTERRUPT_PIN >= 0 && PE_INTERRUPT_PIN <= 39)
+    #if defined(PE_INTERRUPT_PIN) && (PE_INTERRUPT_PIN >= 0 && PE_INTERRUPT_PIN <= MAX_GPIO)
         #define PE_INTERRUPT_ENABLE
         void IRAM_ATTR PORT_ExpanderISR(void);
         bool Port_AllowReadFromPortExpander = false;

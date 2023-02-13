@@ -76,9 +76,9 @@
     #define BUTTON_3                        103         // Button 4: connected to port-expander
     #define BUTTON_4                        104         // Button 5: connected to port-expander
     #define BUTTON_5                        105         // Button 6: connected to port-expander
-    #define NEXT_BUTTON                     BUTTON_1    // Next-Button: connected to port-expander
-    #define PREVIOUS_BUTTON                 BUTTON_2    // Prev-Button: connected to port-expander
-    #define PAUSEPLAY_BUTTON                BUTTON_0    // Pplay-Button: connected to port-expander
+    #define NEXT_BUTTON                     BUTTON_2    // Next-Button: connected to port-expander
+    #define PREVIOUS_BUTTON                 BUTTON_0    // Prev-Button: connected to port-expander
+    #define PAUSEPLAY_BUTTON                BUTTON_1    // Pplay-Button: connected to port-expander
     #define ROTARYENCODER_BUTTON            99          // Set to 99 to disable the button; connected to port-expander
     //#define BUTTONS_LED                   114         // Powers the LEDs of the buttons. Make sure the current consumed by the LEDs can be handled by the used GPIO
     
