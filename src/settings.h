@@ -137,25 +137,25 @@
     */
     // *****BUTTON*****        *****ACTION*****
     #define BUTTON_0_SHORT    CMD_PLAYPAUSE
-    #define BUTTON_1_SHORT    CMD_SEEK_FORWARDS
-    #define BUTTON_2_SHORT    CMD_SEEK_BACKWARDS
+    #define BUTTON_1_SHORT    CMD_SEEK_BACKWARDS
+    #define BUTTON_2_SHORT    CMD_SEEK_FORWARDS
     #define BUTTON_3_SHORT    CMD_VOLUMEUP    //CMD_MEASUREBATTERY
     #define BUTTON_4_SHORT    CMD_VOLUMEDOWN  //CMD_SEEK_BACKWARDS
     #define BUTTON_5_SHORT    CMD_NOTHING     //CMD_SEEK_FORWARDS
 
     #define BUTTON_0_LONG     CMD_PLAYPAUSE
-    #define BUTTON_1_LONG     CMD_NEXTTRACK
-    #define BUTTON_2_LONG     CMD_PREVTRACK
+    #define BUTTON_1_LONG     CMD_PREVTRACK
+    #define BUTTON_2_LONG     CMD_NEXTTRACK
     #define BUTTON_3_LONG     CMD_TOGGLE_WIFI_STATUS
     #define BUTTON_4_LONG     CMD_ENABLE_FTP_SERVER
     #define BUTTON_5_LONG     CMD_NOTHING
 
-    #define BUTTON_MULTI_01   CMD_LASTTRACK  //CMD_TOGGLE_WIFI_STATUS //(disabled now to prevent children from unwanted WiFi-disable)
-    #define BUTTON_MULTI_02   CMD_FIRSTTRACK //CMD_ENABLE_FTP_SERVER
+    #define BUTTON_MULTI_01   CMD_FIRSTTRACK  //CMD_TOGGLE_WIFI_STATUS //(disabled now to prevent children from unwanted WiFi-disable)
+    #define BUTTON_MULTI_02   CMD_LASTTRACK //CMD_ENABLE_FTP_SERVER
     #define BUTTON_MULTI_03   CMD_NOTHING
     #define BUTTON_MULTI_04   CMD_NOTHING
     #define BUTTON_MULTI_05   CMD_NOTHING
-    #define BUTTON_MULTI_12   CMD_SLEEPMODE   //CMD_TELL_IP_ADDRESS
+    #define BUTTON_MULTI_12   CMD_SLEEPMODE  //CMD_TELL_IP_ADDRESS
     #define BUTTON_MULTI_13   CMD_NOTHING
     #define BUTTON_MULTI_14   CMD_NOTHING
     #define BUTTON_MULTI_15   CMD_NOTHING
@@ -213,7 +213,7 @@
     //#################### Settings for optional Modules##############################
     // (optinal) Neopixel
     #ifdef NEOPIXEL_ENABLE
-        #define NUM_LEDS                12          // number of LEDs
+        #define NUM_LEDS                24          // number of LEDs
         #define CHIPSET                 WS2812B     // type of Neopixel
         #define COLOR_ORDER             GRB
 		#define NUM_LEDS_IDLE_DOTS		4           	// count of LEDs, which are shown when Idle

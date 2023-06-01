@@ -42,8 +42,8 @@
     #define RFID_SCK                        18          // GPIO for clock-signal (RFID)
 
     #ifdef RFID_READER_TYPE_PN5180
-        #define RFID_BUSY                   33          // PN5180 BUSY PIN
-        #define RFID_RST                    32          // PN5180 RESET PIN
+        #define RFID_BUSY                   32          // PN5180 BUSY PIN
+        #define RFID_RST                    33          // PN5180 RESET PIN
         #define RFID_IRQ                    99          // Needs to be adjusted to 106 if LPCD-mode is desired!
     #endif
 
@@ -60,7 +60,7 @@
     #endif
 
     // Amp enable (optional)
-    #define GPIO_PA_EN                      99         // To enable amp for loudspeaker (GPIO or port-channel)
+    #define GPIO_PA_EN                      113         // To enable amp for loudspeaker (GPIO or port-channel)
     #define GPIO_HP_EN                      99         // To enable amp for headphones (GPIO or port-channel)
     #define GPIO_LED0                       108
     #define GPIO_LED1                       109
@@ -75,10 +75,9 @@
     #define BUTTON_2                        102         // Button 3: connected to port-expander
     #define BUTTON_3                        103         // Button 4: connected to port-expander
     #define BUTTON_4                        104         // Button 5: connected to port-expander
-    #define BUTTON_5                        105         // Button 6: connected to port-expander
-    #define NEXT_BUTTON                     BUTTON_2    // Next-Button: connected to port-expander
-    #define PREVIOUS_BUTTON                 BUTTON_0    // Prev-Button: connected to port-expander
-    #define PAUSEPLAY_BUTTON                BUTTON_1    // Pplay-Button: connected to port-expander
+    #define NEXT_BUTTON                     BUTTON_1    // Next-Button: connected to port-expander
+    #define PREVIOUS_BUTTON                 BUTTON_2    // Prev-Button: connected to port-expander
+    #define PAUSEPLAY_BUTTON                BUTTON_0    // Pplay-Button: connected to port-expander
     #define ROTARYENCODER_BUTTON            99          // Set to 99 to disable the button; connected to port-expander
     //#define BUTTONS_LED                   114         // Powers the LEDs of the buttons. Make sure the current consumed by the LEDs can be handled by the used GPIO
     
@@ -96,7 +95,7 @@
     // Power-control
     #define POWER                           12          // GPIO used to drive transistor-circuit, that switches off peripheral devices while ESP32-deepsleep
     #ifdef POWER
-        // #define INVERT_POWER                          // If enabled, use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH
+        #define INVERT_POWER                          // If enabled, use inverted logic for POWER circuit, that means peripherals are turned off by writing HIGH
     #endif
 
     // (optional) Neopixel
@@ -105,7 +104,7 @@
     // (optinal) Headphone-detection
     #ifdef HEADPHONE_ADJUST_ENABLE
         //#define DETECT_HP_ON_HIGH                     // Per default headphones are supposed to be connected if HT_DETECT is LOW. DETECT_HP_ON_HIGH will change this behaviour to HIGH.
-        #define HP_DETECT                   BUTTON_5    // GPIO that detects, if there's a plug in the headphone jack or not; connected to port-expander
+        #define HP_DETECT                   36          // GPIO that detects, if there's a plug in the headphone jack or not; connected to port-expander
     #endif
 
     // (optional) Monitoring of battery-voltage via ADC
