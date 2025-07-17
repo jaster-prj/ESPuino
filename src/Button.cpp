@@ -11,35 +11,47 @@ bool gButtonInitComplete = false;
 // Only enable those buttons that are not disabled (99 or >115)
 // 0 -> 39: GPIOs
 // 100 -> 115: Port-expander
+#if defined(BUTTON_0)
 #if (BUTTON_0 >= 0 && BUTTON_0 <= MAX_GPIO)
     #define BUTTON_0_ENABLE
 #elif (BUTTON_0 >= 100 && BUTTON_0 <= 115)
     #define EXPANDER_0_ENABLE
 #endif
+#endif
+#if defined(BUTTON_1)
 #if (BUTTON_1 >= 0 && BUTTON_1 <= MAX_GPIO)
     #define BUTTON_1_ENABLE
 #elif (BUTTON_1 >= 100 && BUTTON_1 <= 115)
     #define EXPANDER_1_ENABLE
 #endif
+#endif
+#if defined(BUTTON_2)
 #if (BUTTON_2 >= 0 && BUTTON_2 <= MAX_GPIO)
     #define BUTTON_2_ENABLE
 #elif (BUTTON_2 >= 100 && BUTTON_2 <= 115)
     #define EXPANDER_2_ENABLE
 #endif
+#endif
+#if defined(BUTTON_3)
 #if (BUTTON_3 >= 0 && BUTTON_3 <= MAX_GPIO)
     #define BUTTON_3_ENABLE
 #elif (BUTTON_3 >= 100 && BUTTON_3 <= 115)
     #define EXPANDER_3_ENABLE
 #endif
+#endif
+#if defined(BUTTON_4)
 #if (BUTTON_4 >= 0 && BUTTON_4 <= MAX_GPIO)
 	#define BUTTON_4_ENABLE
 #elif (BUTTON_4 >= 100 && BUTTON_4 <= 115)
 	#define EXPANDER_4_ENABLE
 #endif
+#endif
+#if defined(BUTTON_5)
 #if (BUTTON_5 >= 0 && BUTTON_5 <= MAX_GPIO)
 	#define BUTTON_5_ENABLE
 #elif (BUTTON_5 >= 100 && BUTTON_5 <= 115)
 	#define EXPANDER_5_ENABLE
+#endif
 #endif
 
 t_button gButtons[7];         // next + prev + pplay + rotEnc + button4 + button5 + dummy-button
