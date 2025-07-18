@@ -24,14 +24,15 @@
 #define RFID_PN5180_STATE_INIT 0u
 
 #define RFID_PN5180_NFC14443_STATE_RESET	1u
-#define RFID_PN5180_NFC14443_STATE_READCARD 2u
+#define RFID_PN5180_NFC14443_STATE_SETUPRF	2u
+#define RFID_PN5180_NFC14443_STATE_READCARD 3u
 #define RFID_PN5180_NFC14443_STATE_ACTIVE	99u
 
-#define RFID_PN5180_NFC15693_STATE_RESET				3u
-#define RFID_PN5180_NFC15693_STATE_SETUPRF				4u
-#define RFID_PN5180_NFC15693_STATE_GETINVENTORY			5u
-#define RFID_PN5180_NFC15693_STATE_DISABLEPRIVACYMODE	6u
-#define RFID_PN5180_NFC15693_STATE_GETINVENTORY_PRIVACY 7u
+#define RFID_PN5180_NFC15693_STATE_RESET				4u
+#define RFID_PN5180_NFC15693_STATE_SETUPRF				5u
+#define RFID_PN5180_NFC15693_STATE_GETINVENTORY			6u
+#define RFID_PN5180_NFC15693_STATE_DISABLEPRIVACYMODE	7u
+#define RFID_PN5180_NFC15693_STATE_GETINVENTORY_PRIVACY 8u
 #define RFID_PN5180_NFC15693_STATE_ACTIVE				100u
 
 extern unsigned long Rfid_LastRfidCheckTimestamp;
@@ -160,6 +161,8 @@ void Rfid_Task(void *parameter) {
 		} else if (RFID_PN5180_NFC14443_STATE_RESET == stateMachine) {
 			nfc14443.reset();
 			// Log_Printf(LOGLEVEL_DEBUG, "%u", uxTaskGetStackHighWaterMark(NULL));
+		} else if (RFID_PN5180_NFC14443_STATE_SETUPRF == stateMachine) {
+			nfc14443.setupRF();
 		} else if (RFID_PN5180_NFC14443_STATE_READCARD == stateMachine) {
 
 			if (nfc14443.readCardSerial(uid) >= 4) {
@@ -194,7 +197,7 @@ void Rfid_Task(void *parameter) {
 			//
 			// default factory password for ICODE-SLIX2 is {0x0F, 0x0F, 0x0F, 0x0F}
 			//
-			const uint8_t password[] = {0x0F, 0x0F, 0x0F, 0x0F};
+			const uint8_t password[] = {0x5B, 0x6E, 0xFD, 0x7F};
 			ISO15693ErrorCode myrc = nfc15693.disablePrivacyMode(password);
 			if (ISO15693_EC_OK == myrc) {
 				if (showDisablePrivacyNotification) {

@@ -93,10 +93,10 @@ static size_t AudioPlayer_NvsRfidWriteWrapper(const char *_rfidCardId, const uin
 static void AudioPlayer_ClearCover(void);
 
 void Audio_TaskPause(void) {
-	bool audio_active = false;
+	audio_active = false;
 }
 void Audio_TaskResume(void) {
-	bool audio_active = true;
+	audio_active = true;
 }
 
 void AudioPlayer_Init(void) {

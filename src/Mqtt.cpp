@@ -29,6 +29,15 @@ String gMqttServer = "192.168.2.43"; // IP-address of MQTT-server (if not found 
 String gMqttUser = "mqtt-user"; // MQTT-user
 String gMqttPassword = "mqtt-password"; // MQTT-password
 uint16_t gMqttPort = 1883; // MQTT-Port
+
+char *topicClientSleepCmnd;
+char *topicClientRfidCmnd;
+char *topicClientTrackControlCmnd;
+char *topicClientLoudnessCmnd;
+char *topicClientSleepTimerCmnd;
+char *topicClientLockControlsCmnd;
+char *topicClientRepeatModeCmnd;
+char *topicClientLedBrightnessCmnd;
 #endif
 
 // MQTT
@@ -67,6 +76,45 @@ void Mqtt_Init() {
 		gMqttClientId = nvsMqttClientId;
 		Log_Printf(LOGLEVEL_INFO, restoredMqttClientIdFromNvs, nvsMqttClientId.c_str());
 	}
+
+	char buffer[255];
+	int buffer_size = 0;
+	// char *topicClientSleepCmnd;
+	buffer_size = sprintf(buffer, topicSleepCmnd, gMqttClientId.c_str());
+	topicClientSleepCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientSleepCmnd, (char *) buffer, buffer_size);
+	// char *topicClientRfidCmnd;
+	buffer_size = sprintf(buffer, topicRfidCmnd, gMqttClientId.c_str());
+	topicClientRfidCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientRfidCmnd, (char *) buffer, buffer_size);
+	// char *topicClientTrackControlCmnd;
+	buffer_size = sprintf(buffer, topicTrackControlCmnd, gMqttClientId.c_str());
+	topicClientTrackControlCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientTrackControlCmnd, (char *) buffer, buffer_size);
+	// char *topicClientLoudnessCmnd;
+	buffer_size = sprintf(buffer, topicLoudnessCmnd, gMqttClientId.c_str());
+	topicClientLoudnessCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientLoudnessCmnd, (char *) buffer, buffer_size);
+	// char *topicClientSleepTimerCmnd;
+	buffer_size = sprintf(buffer, topicSleepTimerCmnd, gMqttClientId.c_str());
+	topicClientSleepTimerCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientSleepTimerCmnd, (char *) buffer, buffer_size);
+	// char *topicClientSleepTimerCmnd;
+	buffer_size = sprintf(buffer, topicSleepTimerCmnd, gMqttClientId.c_str());
+	topicClientSleepTimerCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientSleepTimerCmnd, (char *) buffer, buffer_size);
+	// char *topicClientLockControlsCmnd;
+	buffer_size = sprintf(buffer, topicLockControlsCmnd, gMqttClientId.c_str());
+	topicClientLockControlsCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientLockControlsCmnd, (char *) buffer, buffer_size);
+	// char *topicClientRepeatModeCmnd;
+	buffer_size = sprintf(buffer, topicRepeatModeCmnd, gMqttClientId.c_str());
+	topicClientRepeatModeCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientRepeatModeCmnd, (char *) buffer, buffer_size);
+	// char *topicClientLedBrightnessCmnd;
+	buffer_size = sprintf(buffer, topicLedBrightnessCmnd, gMqttClientId.c_str());
+	topicClientLedBrightnessCmnd = (char *) x_calloc(buffer_size + 1u, sizeof(char));
+	memcpy(topicClientLedBrightnessCmnd, (char *) buffer, buffer_size);
 
 	// Get MQTT-server from NVS
 	String nvsMqttServer = gPrefsSettings.getString("mqttServer", "-1");
@@ -163,7 +211,9 @@ bool publishMqtt(const char *topic, const char *payload, bool retained) {
 #ifdef MQTT_ENABLE
 	if (strcmp(topic, "") != 0) {
 		int qos = 0;
-		int ret = esp_mqtt_client_publish(mqtt_client, topic, payload, 0, qos, retained);
+		char buffer[255];
+		sprintf(buffer, topic, gMqttClientId.c_str());
+		int ret = esp_mqtt_client_publish(mqtt_client, buffer, payload, 0, qos, retained);
 		// int ret = esp_mqtt_client_enqueue(mqtt_client, topic, payload, 0, qos, retained, true);
 		return ret == 0;
 	}
@@ -218,30 +268,47 @@ void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event
 	switch ((esp_mqtt_event_id_t) event_id) {
 		case MQTT_EVENT_CONNECTED: {
 			int qos = 0;
+			char buffer[255];
 
 			// Deepsleep-subscription
-			esp_mqtt_client_subscribe(client, topicSleepCmnd, qos);
+			sprintf(buffer, topicSleepCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// RFID-"mqtt_debug"-ID-subscription
-			esp_mqtt_client_subscribe(client, topicRfidCmnd, qos);
+			sprintf(buffer, topicRfidCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// Loudness-subscription
-			esp_mqtt_client_subscribe(client, topicLoudnessCmnd, qos);
+			sprintf(buffer, topicLoudnessCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// Sleep-Timer-subscription
-			esp_mqtt_client_subscribe(client, topicSleepTimerCmnd, qos);
+			sprintf(buffer, topicSleepTimerCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// Next/previous/stop/play-track-subscription
-			esp_mqtt_client_subscribe(client, topicTrackControlCmnd, qos);
+			sprintf(buffer, topicTrackControlCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// Lock controls
-			esp_mqtt_client_subscribe(client, topicLockControlsCmnd, qos);
+			sprintf(buffer, topicLockControlsCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// Current repeat-Mode
-			esp_mqtt_client_subscribe(client, topicRepeatModeCmnd, qos);
+			sprintf(buffer, topicRepeatModeCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// LED-brightness
-			esp_mqtt_client_subscribe(client, topicLedBrightnessCmnd, qos);
+			sprintf(buffer, topicLedBrightnessCmnd, gMqttClientId.c_str());
+			esp_mqtt_client_subscribe(client, buffer, qos);
+			memset(buffer, 0, sizeof(buffer));
 
 			// Publish current state
 			publishMqtt(topicState, "Online", false);
@@ -304,13 +371,13 @@ void Mqtt_ClientCallback(const char *topic_buf, uint32_t topic_length, const cha
 	Log_Printf(LOGLEVEL_INFO, mqttMsgReceived, topic_str.c_str(), payload_str.c_str());
 
 	// Go to sleep?
-	if (topic_str == topicSleepCmnd) {
+	if (strcmp_P(topic_buf, topicClientSleepCmnd) == 0) {
 		if (payload_str == "OFF" || payload_str == "0") {
 			System_RequestSleep();
 		}
 	}
 	// New track to play? Take RFID-ID as input
-	else if (topic_str == topicRfidCmnd) {
+	else if (strcmp_P(topic_buf, topicClientRfidCmnd) == 0) {
 		if (payload_str.size() >= (cardIdStringSize - 1)) {
 			xQueueSend(gRfidCardQueue, payload_str.data(), 0);
 		} else {
@@ -318,12 +385,12 @@ void Mqtt_ClientCallback(const char *topic_buf, uint32_t topic_length, const cha
 		}
 	}
 	// Loudness to change?
-	else if (topic_str == topicLoudnessCmnd) {
+	else if (strcmp_P(topic_buf, topicClientLoudnessCmnd) == 0) {
 		unsigned long vol = toNumber<uint32_t>(payload_str);
 		AudioPlayer_SetVolume(vol, true);
 	}
 	// Modify sleep-timer?
-	else if (topic_str == topicSleepTimerCmnd) {
+	else if (strcmp_P(topic_buf, topicClientSleepTimerCmnd) == 0) {
 		if (gPlayProperties.playMode == NO_PLAYLIST) { // Don't allow sleep-modications if no playlist is active
 			Log_Println(modificatorNotallowedWhenIdle, LOGLEVEL_INFO);
 			publishMqtt(topicSleepState, static_cast<uint32_t>(0), false);
@@ -384,13 +451,13 @@ void Mqtt_ClientCallback(const char *topic_buf, uint32_t topic_length, const cha
 		gPlayProperties.sleepAfterCurrentTrack = false;
 	}
 	// Track-control (pause/play, stop, first, last, next, previous)
-	else if (topic_str == topicTrackControlCmnd) {
+	else if (strcmp_P(topic_buf, topicClientTrackControlCmnd) == 0) {
 		uint8_t controlCommand = toNumber<uint8_t>(payload_str);
 		AudioPlayer_SetTrackControl(controlCommand);
 	}
 
 	// Check if controls should be locked
-	else if (topic_str == topicLockControlsCmnd) {
+	else if (strcmp_P(topic_buf, topicClientLockControlsCmnd) == 0) {
 		if (payload_str == "OFF") {
 			System_SetLockControls(false);
 			Log_Println(allowButtons, LOGLEVEL_NOTICE);
@@ -405,7 +472,7 @@ void Mqtt_ClientCallback(const char *topic_buf, uint32_t topic_length, const cha
 	}
 
 	// Check if playmode should be adjusted
-	else if (topic_str == topicRepeatModeCmnd) {
+	else if (strcmp_P(topic_buf, topicClientRepeatModeCmnd) == 0) {
 		uint8_t repeatMode = toNumber<uint8_t>(payload_str);
 		Log_Printf(LOGLEVEL_NOTICE, "Repeat: %d", repeatMode);
 		if (gPlayProperties.playMode != NO_PLAYLIST) {
@@ -457,7 +524,7 @@ void Mqtt_ClientCallback(const char *topic_buf, uint32_t topic_length, const cha
 	}
 
 	// Check if LEDs should be dimmed
-	else if (topic_str == topicLedBrightnessCmnd) {
+	else if (strcmp_P(topic_buf, topicClientLedBrightnessCmnd) == 0) {
 		Led_SetBrightness(toNumber<uint8_t>(payload_str));
 	}
 
