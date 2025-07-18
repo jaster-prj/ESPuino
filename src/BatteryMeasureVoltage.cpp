@@ -69,6 +69,16 @@ float Battery_GetVoltage(void) {
 
 void Battery_PublishMQTT() {
 	#ifdef MQTT_ENABLE
+	uint16_t voltage_debug = analogRead(VOLTAGE_READ_PIN);
+	Log_Printf(LOGLEVEL_DEBUG, "AnalogRead - Voltage: %u", voltage_debug);
+	Log_Printf(LOGLEVEL_DEBUG, "Voltage - ReferenceVoltage: %d.%u, OffsetVoltage: %.2f", (int)referenceVoltage, (referenceVoltage-(uint16_t)referenceVoltage)*100, offsetVoltage); // (int)offsetVoltage, (offsetVoltage-(uint16_t)offsetVoltage)*100);
+	Log_Printf(LOGLEVEL_DEBUG, "Voltage - rdiv1: %u, rdiv2: %u", rdiv1, rdiv2);
+
+	// 3.486V:
+	// D [4210297] AnalogRead - Voltage: 1959
+	// D [4210297] Voltage - ReferenceVoltage: 3.1073544480, OffsetVoltage: 3221225472.1077805055
+	// D [4210298] Voltage - rdiv1: 100, rdiv2: 100
+
 	float voltage = Battery_GetVoltage();
 	char vstr[6];
 	snprintf(vstr, 6, "%.2f", voltage);
