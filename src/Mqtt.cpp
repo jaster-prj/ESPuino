@@ -145,7 +145,10 @@ bool publishMqtt(const char *topic, const char *payload, bool retained) {
 	#ifdef MQTT_ENABLE
 		if (strcmp(topic, "") != 0) {
 			if (Mqtt_PubSubClient.connected()) {
-				Mqtt_PubSubClient.publish(topic, payload, retained);
+				// Mqtt_PubSubClient.publish(topic, payload, retained);
+				char buffer[255];
+				sprintf(buffer, topic, gMqttClientId.c_str());
+				Mqtt_PubSubClient.publish(buffer, payload, retained);
 				//delay(100);
 				return true;
 			}
@@ -232,29 +235,46 @@ bool Mqtt_Reconnect() {
 			if (connect) {
 				Log_Println((char *) FPSTR(mqttOk), LOGLEVEL_NOTICE);
 
-				// Deepsleep-subscription
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicSleepCmnd));
+			// Deepsleep-subscription
+			char buffer[255];
+			sprintf(buffer, topicSleepCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
-				// RFID-Tag-ID-subscription
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicRfidCmnd));
+			// RFID-Tag-ID-subscription
+			sprintf(buffer, topicRfidCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
-				// Loudness-subscription
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicLoudnessCmnd));
+			// Loudness-subscription
+			sprintf(buffer, topicLoudnessCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
-				// Sleep-Timer-subscription
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicSleepTimerCmnd));
+			// Sleep-Timer-subscription
+			sprintf(buffer, topicSleepTimerCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
-				// Next/previous/stop/play-track-subscription
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicTrackControlCmnd));
+			// Next/previous/stop/play-track-subscription
+			sprintf(buffer, topicTrackControlCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
-				// Lock controls
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicLockControlsCmnd));
+			// Lock controls
+			sprintf(buffer, topicLockControlsCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
-				// Current repeat-Mode
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicRepeatModeCmnd));
+			// Current repeat-Mode
+			sprintf(buffer, topicRepeatModeCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
-				// LED-brightness
-				Mqtt_PubSubClient.subscribe((char *) FPSTR(topicLedBrightnessCmnd));
+			// LED-brightness
+			sprintf(buffer, topicLedBrightnessCmnd, gMqttClientId.c_str());
+			Mqtt_PubSubClient.subscribe(buffer);
+			memset(buffer, 0, sizeof(buffer));
 
 				// Publish current state
 				publishMqtt((char *) FPSTR(topicState), "Online", false);
