@@ -43,42 +43,42 @@ void IrReceiver_Cyclic() {
 		switch (IrReceiver.decodedIRData.command) {
 			case RC_PLAY: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_PLAYPAUSE);
+					Cmd_Action(CMD_PLAYPAUSE, "IR");
 					Log_Println("RC: Play", LOGLEVEL_NOTICE);
 				}
 				break;
 			}
 			case RC_PAUSE: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_PLAYPAUSE);
+					Cmd_Action(CMD_PLAYPAUSE, "IR");
 					Log_Println("RC: Pause", LOGLEVEL_NOTICE);
 				}
 				break;
 			}
 			case RC_NEXT: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_NEXTTRACK);
+					Cmd_Action(CMD_NEXTTRACK, "IR");
 					Log_Println("RC: Next", LOGLEVEL_NOTICE);
 				}
 				break;
 			}
 			case RC_PREVIOUS: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_PREVTRACK);
+					Cmd_Action(CMD_PREVTRACK, "IR");
 					Log_Println("RC: Previous", LOGLEVEL_NOTICE);
 				}
 				break;
 			}
 			case RC_FIRST: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_FIRSTTRACK);
+					Cmd_Action(CMD_FIRSTTRACK, "IR");
 					Log_Println("RC: First", LOGLEVEL_NOTICE);
 				}
 				break;
 			}
 			case RC_LAST: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_LASTTRACK);
+					Cmd_Action(CMD_LASTTRACK, "IR");
 					Log_Println("RC: Last", LOGLEVEL_NOTICE);
 				}
 				break;
@@ -100,7 +100,7 @@ void IrReceiver_Cyclic() {
 			}
 			case RC_BLUETOOTH: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_TOGGLE_BLUETOOTH_SINK_MODE);
+					Cmd_Action(CMD_TOGGLE_BLUETOOTH_SINK_MODE, "IR");
 					Log_Println("RC: Bluetooth sink", LOGLEVEL_NOTICE);
 				}
 				break;
@@ -108,7 +108,7 @@ void IrReceiver_Cyclic() {
 			// +++ todo: bluetooth source mode +++
 			case RC_FTP: {
 				if (rcActionOk) {
-					Cmd_Action(CMD_ENABLE_FTP_SERVER);
+					Cmd_Action(CMD_ENABLE_FTP_SERVER, "IR");
 					Log_Println("RC: FTP", LOGLEVEL_NOTICE);
 				}
 				break;
@@ -121,12 +121,12 @@ void IrReceiver_Cyclic() {
 				break;
 			}
 			case RC_VOL_DOWN: {
-				Cmd_Action(CMD_VOLUMEDOWN);
+				Cmd_Action(CMD_VOLUMEDOWN, "IR");
 				Log_Println("RC: Volume down", LOGLEVEL_NOTICE);
 				break;
 			}
 			case RC_VOL_UP: {
-				Cmd_Action(CMD_VOLUMEUP);
+				Cmd_Action(CMD_VOLUMEUP, "IR");
 				Log_Println("RC: Volume up", LOGLEVEL_NOTICE);
 				break;
 			}

@@ -31,7 +31,8 @@ static void Cmd_HandleSleepAction(bool enable, const char *enLogMsg, const char 
 	}
 }
 
-void Cmd_Action(const uint16_t mod) {
+void Cmd_Action(const uint16_t mod, const char* origin) {
+	Log_Printf(LOGLEVEL_DEBUG, "%s Command\n", origin);
 	switch (mod) {
 		case CMD_LOCK_BUTTONS_MOD: { // Locks/unlocks all buttons
 			System_ToggleLockControls();
@@ -135,7 +136,7 @@ void Cmd_Action(const uint16_t mod) {
 			if (gPlayProperties.sleepAfter5Tracks) {
 				if (gPlayProperties.currentTrackNumber + 5 > gPlayProperties.playlist->size()) {
 					// execute a sleep after end of playlist
-					Cmd_Action(CMD_SLEEP_AFTER_END_OF_PLAYLIST);
+					Cmd_Action(CMD_SLEEP_AFTER_END_OF_PLAYLIST, "CMD");
 					break;
 				}
 			}

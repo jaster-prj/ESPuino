@@ -228,63 +228,63 @@ void Button_DoButtonActions(void) {
 	if (gButtons[0].isPressed && gButtons[1].isPressed) {
 		gButtons[0].isPressed = false;
 		gButtons[1].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_01);
+		Cmd_Action(BUTTON_MULTI_01, "BUTTON");
 	} else if (gButtons[0].isPressed && gButtons[2].isPressed) {
 		gButtons[0].isPressed = false;
 		gButtons[2].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_02);
+		Cmd_Action(BUTTON_MULTI_02, "BUTTON");
 	} else if (gButtons[0].isPressed && gButtons[3].isPressed) {
 		gButtons[0].isPressed = false;
 		gButtons[3].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_03);
+		Cmd_Action(BUTTON_MULTI_03, "BUTTON");
 	} else if (gButtons[0].isPressed && gButtons[4].isPressed) {
 		gButtons[0].isPressed = false;
 		gButtons[4].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_04);
+		Cmd_Action(BUTTON_MULTI_04, "BUTTON");
 	} else if (gButtons[0].isPressed && gButtons[5].isPressed) {
 		gButtons[0].isPressed = false;
 		gButtons[5].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_05);
+		Cmd_Action(BUTTON_MULTI_05, "BUTTON");
 	} else if (gButtons[1].isPressed && gButtons[2].isPressed) {
 		gButtons[1].isPressed = false;
 		gButtons[2].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_12);
+		Cmd_Action(BUTTON_MULTI_12, "BUTTON");
 	} else if (gButtons[1].isPressed && gButtons[3].isPressed) {
 		gButtons[1].isPressed = false;
 		gButtons[3].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_13);
+		Cmd_Action(BUTTON_MULTI_13, "BUTTON");
 	} else if (gButtons[1].isPressed && gButtons[4].isPressed) {
 		gButtons[1].isPressed = false;
 		gButtons[4].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_14);
+		Cmd_Action(BUTTON_MULTI_14, "BUTTON");
 	} else if (gButtons[1].isPressed && gButtons[5].isPressed) {
 		gButtons[1].isPressed = false;
 		gButtons[5].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_15);
+		Cmd_Action(BUTTON_MULTI_15, "BUTTON");
 	} else if (gButtons[2].isPressed && gButtons[3].isPressed) {
 		gButtons[2].isPressed = false;
 		gButtons[3].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_23);
+		Cmd_Action(BUTTON_MULTI_23, "BUTTON");
 	} else if (gButtons[2].isPressed && gButtons[4].isPressed) {
 		gButtons[2].isPressed = false;
 		gButtons[4].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_24);
+		Cmd_Action(BUTTON_MULTI_24, "BUTTON");
 	} else if (gButtons[2].isPressed && gButtons[5].isPressed) {
 		gButtons[2].isPressed = false;
 		gButtons[5].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_25);
+		Cmd_Action(BUTTON_MULTI_25, "BUTTON");
 	} else if (gButtons[3].isPressed && gButtons[4].isPressed) {
 		gButtons[3].isPressed = false;
 		gButtons[4].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_34);
+		Cmd_Action(BUTTON_MULTI_34, "BUTTON");
 	} else if (gButtons[3].isPressed && gButtons[5].isPressed) {
 		gButtons[3].isPressed = false;
 		gButtons[5].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_35);
+		Cmd_Action(BUTTON_MULTI_35, "BUTTON");
 	} else if (gButtons[4].isPressed && gButtons[5].isPressed) {
 		gButtons[4].isPressed = false;
 		gButtons[5].isPressed = false;
-		Cmd_Action(BUTTON_MULTI_45);
+		Cmd_Action(BUTTON_MULTI_45, "BUTTON");
 	} else {
 		unsigned long currentTimestamp = millis();
 		for (uint8_t i = 0; i <= 5; i++) {
@@ -326,11 +326,11 @@ void Button_DoButtonActions(void) {
 
 				if (gButtons[i].lastReleasedTimestamp > gButtons[i].lastPressedTimestamp) { // short action
 					if (gButtons[i].lastReleasedTimestamp - gButtons[i].lastPressedTimestamp < intervalToLongPress) {
-						Cmd_Action(Cmd_Short);
+						Cmd_Action(Cmd_Short, "BUTTON");
 					} else {
 						// sleep-mode should only be triggered on release, otherwise it will wake it up directly again
 						if (Cmd_Long == CMD_SLEEPMODE) {
-							Cmd_Action(Cmd_Long);
+							Cmd_Action(Cmd_Long, "BUTTON");
 						}
 					}
 
@@ -345,7 +345,7 @@ void Button_DoButtonActions(void) {
 
 						// trigger action if remainder rolled over
 						if (remainder < gLongPressTime) {
-							Cmd_Action(Cmd_Long);
+							Cmd_Action(Cmd_Long, "BUTTON");
 						}
 
 						gLongPressTime = remainder;
@@ -355,7 +355,7 @@ void Button_DoButtonActions(void) {
 					// start action if intervalToLongPress has been reached
 					if ((currentTimestamp - gButtons[i].lastPressedTimestamp) > intervalToLongPress) {
 						gButtons[i].isPressed = false;
-						Cmd_Action(Cmd_Long);
+						Cmd_Action(Cmd_Long, "BUTTON");
 					}
 				}
 			}

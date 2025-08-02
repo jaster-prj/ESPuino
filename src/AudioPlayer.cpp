@@ -147,7 +147,7 @@ void AudioPlayer_Init(void) {
 		xTaskCreatePinnedToCore(
 			AudioPlayer_Task, /* Function to implement the task */
 			"mp3play", /* Name of the task */
-			12000, /* Stack size in words */
+			5500, /* Stack size in words */
 			NULL, /* Task input parameter */
 			2 | portPRIVILEGE_BIT, /* Priority of the task */
 			&AudioTaskHandle, /* Task handle. */
@@ -980,12 +980,12 @@ void AudioPlayer_PauseOnMinVolume(const uint8_t oldVolume, const uint8_t newVolu
 
 	if (!gPlayProperties.pausePlay) { // Volume changes from 1 to 0
 		if (oldVolume == AudioPlayer_GetMinVolume() + 1 && newVolume == AudioPlayer_GetMinVolume()) {
-			Cmd_Action(CMD_PLAYPAUSE);
+			Cmd_Action(CMD_PLAYPAUSE, "AudioPlayer");
 		}
 	}
 	if (gPlayProperties.pausePlay) { // Volume changes from 0 to 1
 		if (oldVolume == AudioPlayer_GetMinVolume() && newVolume > AudioPlayer_GetMinVolume()) {
-			Cmd_Action(CMD_PLAYPAUSE);
+			Cmd_Action(CMD_PLAYPAUSE, "AudioPlayer");
 		}
 	}
 #endif

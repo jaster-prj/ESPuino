@@ -75,7 +75,7 @@ void Rfid_PreferenceLookupHandler(void) {
 			// Only pass file to queue if strtok revealed 3 items
 			if (_playMode >= 100) {
 				// Modification-cards can change some settings (e.g. introducing track-looping or sleep after track/playlist).
-				Cmd_Action(_playMode);
+				Cmd_Action(_playMode, "RFID");
 			} else {
 	#ifdef DONT_ACCEPT_SAME_RFID_TWICE_ENABLE
 				if (strncmp(gCurrentRfidTagId, gOldRfidTagId, 12) == 0) {

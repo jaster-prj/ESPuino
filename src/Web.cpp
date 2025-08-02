@@ -786,7 +786,7 @@ bool JSONToSettings(JsonObject doc) {
 		}
 		if (doc["controls"].containsKey("action")) {
 			uint8_t cmd = doc["controls"]["action"].as<uint8_t>();
-			Cmd_Action(cmd);
+			Cmd_Action(cmd, "WEB");
 		}
 	} else if (doc.containsKey("trackinfo")) {
 		Web_SendWebsocketData(0, WebsocketCodeType::TrackInfo);
@@ -1600,7 +1600,7 @@ void explorerHandleDeleteRequest(AsyncWebServerRequest *request) {
 		const char *filePath = param->value().c_str();
 		if (gFSystem.exists(filePath)) {
 			// stop playback, file to delete might be in use
-			Cmd_Action(CMD_STOP);
+			Cmd_Action(CMD_STOP, "WEB");
 			file = gFSystem.open(filePath);
 			if (file.isDirectory()) {
 				if (explorerDeleteDirectory(file)) {
@@ -1989,7 +1989,7 @@ static void handleDeleteRFIDRequest(AsyncWebServerRequest *request) {
 	if (gPrefsRfid.isKey(tagId.c_str())) {
 		if (tagId.equals(gCurrentRfidTagId)) {
 			// stop playback, tag to delete is in use
-			Cmd_Action(CMD_STOP);
+			Cmd_Action(CMD_STOP, "WEB");
 		}
 		if (gPrefsRfid.remove(tagId.c_str())) {
 			Log_Printf(LOGLEVEL_INFO, "/rfid (DELETE): tag %s removed successfuly", tagId);
