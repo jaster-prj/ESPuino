@@ -173,10 +173,10 @@
 
     // Static ip-configuration
     #ifdef STATIC_IP_ENABLE
-        #define LOCAL_IP   192,168,8,6                // ESPuino's IP
+        #define LOCAL_IP   192,168,8,14                // ESPuino's IP
         #define GATEWAY_IP 192,168,8,1                  // IP of the gateway/router
         #define SUBNET_IP  255,255,255,0                // Netmask of your network (/24 => 255.255.255.0)
-        #define DNS_IP     192,168,8,3                  // DNS-server of your network; in private networks it's usually the gatewy's IP
+        #define DNS_IP     192,168,8,5                  // DNS-server of your network; in private networks it's usually the gatewy's IP
     #endif
 
 	// Buttons (better leave unchanged if in doubts :-))
@@ -213,7 +213,7 @@
     //#################### Settings for optional Modules##############################
     // (optinal) Neopixel
     #ifdef NEOPIXEL_ENABLE
-        #define NUM_LEDS                24          // number of LEDs
+        #define NUM_LEDS                32          // number of LEDs
         #define CHIPSET                 WS2812B     // type of Neopixel
         #define COLOR_ORDER             GRB
 		#define NUM_LEDS_IDLE_DOTS		4           	// count of LEDs, which are shown when Idle
